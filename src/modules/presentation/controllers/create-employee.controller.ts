@@ -21,6 +21,10 @@ export class CreateEmployeeController {
       throw new BadRequest('email');
     }
 
+    if (!request.role) {
+      throw new BadRequest('role');
+    }
+
     return Promise.resolve(null);
   }
 }
