@@ -5,7 +5,7 @@ import { FindActiveEmployeeByEmail } from '../ports/find-active-employee-by-emai
 
 const makeStubs = () => ({
   findActiveEmployeeByEmailStub: {
-    isExist: jest.fn().mockResolvedValue(false) as jest.MockedFunction<
+    isExist: jest.fn().mockResolvedValue(null) as jest.MockedFunction<
       FindActiveEmployeeByEmail['isExist']
     >,
   } satisfies FindActiveEmployeeByEmail,

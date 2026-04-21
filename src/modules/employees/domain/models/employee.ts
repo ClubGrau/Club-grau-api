@@ -21,6 +21,12 @@ export namespace EmployeeModel {
     deactivatedAt: string | null;
   }
 
+  export interface Status {
+    id: string;
+    email: string;
+    isActive: boolean;
+  }
+
   export interface CreateEmployeeResponseDto {
     id: string;
   }
