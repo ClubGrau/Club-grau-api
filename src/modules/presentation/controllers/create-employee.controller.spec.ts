@@ -39,4 +39,18 @@ describe('CreateEmployeeController', () => {
     await expect(response).rejects.toThrow(BadRequest);
     await expect(response).rejects.toThrow('Missing param: name');
   });
+
+  it('should return badRequest if email is not provided', async () => {
+    const { sut } = await makeSut();
+    const request = {
+      name: 'John Doe',
+      email: '',
+      role: 'admin' as EmployeeRole,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const response = sut.handle(request);
+    await expect(response).rejects.toThrow(BadRequest);
+    await expect(response).rejects.toThrow('Missing param: email');
+  });
 });
