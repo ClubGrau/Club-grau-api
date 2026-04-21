@@ -13,7 +13,7 @@ interface CreateEmployeeRequestDto {
 export class CreateEmployeeController {
   @Post()
   async handle(@Body() request: CreateEmployeeRequestDto) {
-    const requiredFields = ['name', 'email', 'role'];
+    const requiredFields = ['name', 'email', 'role', 'password'];
     for (const field of requiredFields) {
       if (!request[field]) {
         throw new BadRequest(field);
