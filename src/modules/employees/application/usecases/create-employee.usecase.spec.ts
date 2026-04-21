@@ -1,17 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateEmployeeUseCase } from './create-employee.usecase';
 import { EmployeeModel } from '../../domain/models/employee';
+import { FindActiveEmployeeByEmail } from '../ports/find-active-employee-by-email.port';
+
+const makeStubs = () => ({
+  findActiveEmployeeByEmailStub: {
+    isExist: jest.fn().mockResolvedValue(false) as jest.MockedFunction<
+      FindActiveEmployeeByEmail['isExist']
+    >,
+  } satisfies FindActiveEmployeeByEmail,
+});
 
 const makeSut = async () => {
+  const { findActiveEmployeeByEmailStub } = makeStubs();
   const testModule: TestingModule = await Test.createTestingModule({
-    controllers: [CreateEmployeeUseCase],
-    providers: [],
+    providers: [
+      CreateEmployeeUseCase,
+      {
+        provide: 'FIND_ACTIVE_EMPLOYEE_BY_EMAIL',
+        useValue: findActiveEmployeeByEmailStub,
+      },
+    ],
   }).compile();
 
   const sut = testModule.get<CreateEmployeeUseCase>(CreateEmployeeUseCase);
 
   return {
     sut,
+    findActiveEmployeeByEmailStub,
   };
 };
 
@@ -42,5 +58,22 @@ describe('CreateEmployeeUseCase', () => {
     await expect(execute).rejects.toThrow(
       'Password and passwordConfirmation do not match',
     );
+  });
+
+  it('should call findActiveEmployeeByEmail with the correct email', async () => {
+    const { sut, findActiveEmployeeByEmailStub } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'manager' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const findEmployeeActiveSpy = jest.spyOn(
+      findActiveEmployeeByEmailStub,
+      'isExist',
+    );
+    await sut.execute(params);
+    expect(findEmployeeActiveSpy).toHaveBeenCalledWith('john.doe@example.com');
   });
 });
