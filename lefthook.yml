@@ -1,0 +1,14 @@
+pre-commit:
+  parallel: false
+  commands:
+    prettier:
+      run: npx prettier --check "src/**/*.ts" "test/**/*.ts"
+    lint:
+      run: npx eslint "{src,apps,libs,test}/**/*.ts"
+    test:
+      run: npm test -- --silent --passWithNoTests
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx commitlint --edit $1
