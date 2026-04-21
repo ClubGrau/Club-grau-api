@@ -22,6 +22,10 @@ export class CreateEmployeeUseCase {
     );
 
     if (isEmployeeExist) {
+      const { isActive } = isEmployeeExist;
+      if (!isActive) {
+        throw new Error('Existent employee is inactive');
+      }
       throw new Error('Employee already exists');
     }
     return Promise.resolve({
