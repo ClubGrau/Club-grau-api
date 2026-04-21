@@ -12,7 +12,7 @@ const makeStubs = () => ({
       .mockResolvedValue({ id: 'valid_id' }) as jest.MockedFunction<
       CreateEmployeeUseCase['execute']
     >,
-  } satisfies CreateEmployeeUseCase,
+  } satisfies Pick<CreateEmployeeUseCase, 'execute'>,
 });
 
 const makeSut = async () => {
