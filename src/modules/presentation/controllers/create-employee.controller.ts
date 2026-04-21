@@ -1,10 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { BadRequest } from '../http-exceptions/bad-request';
 
+export type EmployeeRole = 'admin' | 'employee' | 'manager';
 interface CreateEmployeeRequestDto {
   name: string;
   email: string;
-  role: 'admin' | 'employee' | 'manager';
+  role: EmployeeRole;
   password: string;
   passwordConfirmation: string;
 }

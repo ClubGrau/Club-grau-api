@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateEmployeeController } from './create-employee.controller';
+import {
+  CreateEmployeeController,
+  EmployeeRole,
+} from './create-employee.controller';
 import { BadRequest } from '../http-exceptions/bad-request';
-
-type EmployeeRole = 'admin' | 'employee' | 'manager';
 
 const makeSut = async () => {
   const testModule: TestingModule = await Test.createTestingModule({
