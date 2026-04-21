@@ -76,4 +76,40 @@ describe('CreateEmployeeUseCase', () => {
     await sut.execute(params);
     expect(findEmployeeActiveSpy).toHaveBeenCalledWith('john.doe@example.com');
   });
+
+  it('should return an error if employee already exists and is active', async () => {
+    const { sut, findActiveEmployeeByEmailStub } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'manager' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    jest.spyOn(findActiveEmployeeByEmailStub, 'isExist').mockResolvedValueOnce({
+      id: 'existing_employee_id',
+      email: 'john.doe@example.com',
+      isActive: true,
+    });
+    const execute = sut.execute(params);
+    await expect(execute).rejects.toThrow('Employee already exists');
+  });
+
+  it('should return an error if existent employee is inactive', async () => {
+    const { sut, findActiveEmployeeByEmailStub } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'manager' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    jest.spyOn(findActiveEmployeeByEmailStub, 'isExist').mockResolvedValueOnce({
+      id: 'existing_employee_id',
+      email: 'john.doe@example.com',
+      isActive: false,
+    });
+    const execute = sut.execute(params);
+    await expect(execute).rejects.toThrow('Existent employee is inactive');
+  });
 });
