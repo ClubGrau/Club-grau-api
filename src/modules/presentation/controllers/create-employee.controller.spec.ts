@@ -53,4 +53,19 @@ describe('CreateEmployeeController', () => {
     await expect(response).rejects.toThrow(BadRequest);
     await expect(response).rejects.toThrow('Missing param: email');
   });
+
+  it('should return badRequest if role is not provided', async () => {
+    const { sut } = await makeSut();
+    const request = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: null,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const response = sut.handle(request as any);
+    await expect(response).rejects.toThrow(BadRequest);
+    await expect(response).rejects.toThrow('Missing param: role');
+  });
 });
