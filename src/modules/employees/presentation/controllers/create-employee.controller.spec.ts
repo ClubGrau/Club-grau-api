@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CreateEmployeeController } from './create-employee.controller';
 import { BadRequest } from '../http-exceptions/bad-request';
 import { CreateEmployeeUseCase } from '../../application/usecases/create-employee.usecase';
+import { InternalServerErrorException } from '@nestjs/common';
 import { EmployeeModel } from '../../domain/models/employee';
 
 const makeStubs = () => ({
@@ -134,5 +135,24 @@ describe('CreateEmployeeController', () => {
       password: 'P@ssword123',
       passwordConfirmation: 'P@ssword123',
     });
+  });
+
+  it('should return server error if createEmployeeUseCase throws', async () => {
+    const { sut, createEmployeeUseCaseStub } = await makeSut();
+    const request = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    jest
+      .spyOn(createEmployeeUseCaseStub, 'execute')
+      .mockImplementationOnce(() => {
+        throw new Error('Server error');
+      });
+    const response = sut.handle(request);
+    await expect(response).rejects.toThrow(InternalServerErrorException);
+    await expect(response).rejects.toThrow('Internal Server Error');
   });
 });
