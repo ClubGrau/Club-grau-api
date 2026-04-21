@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
-import {
-  CreateEmployeeController,
-  CreateEmployeeUseCase,
-} from '../presentation/controllers/create-employee.controller';
+import { CreateEmployeeController } from '../presentation/controllers/create-employee.controller';
+import { CreateEmployeeUseCase } from '../application/usecases/create-employee.usecase';
 
 @Module({
   imports: [],
