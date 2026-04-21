@@ -7,7 +7,11 @@ import { EmployeeModel } from '../../domain/models/employee';
 
 const makeStubs = () => ({
   createEmployeeUseCaseStub: {
-    execute: jest.fn() as jest.MockedFunction<CreateEmployeeUseCase['execute']>,
+    execute: jest
+      .fn()
+      .mockResolvedValue({ id: 'valid_id' }) as jest.MockedFunction<
+      CreateEmployeeUseCase['execute']
+    >,
   } satisfies CreateEmployeeUseCase,
 });
 
@@ -154,5 +158,20 @@ describe('CreateEmployeeController', () => {
     const response = sut.handle(request);
     await expect(response).rejects.toThrow(InternalServerErrorException);
     await expect(response).rejects.toThrow('Internal Server Error');
+  });
+
+  it('should return an id for employee created on success', async () => {
+    const { sut } = await makeSut();
+    const request = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const response = await sut.handle(request);
+    expect(response).toEqual({
+      id: 'valid_id',
+    });
   });
 });
