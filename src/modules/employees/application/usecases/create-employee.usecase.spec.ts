@@ -20,4 +20,10 @@ describe('CreateEmployeeUseCase', () => {
     expect(sut).toBeDefined();
     expect(sut).toBeInstanceOf(CreateEmployeeUseCase);
   });
+
+  it('should have an execute method', async () => {
+    const { sut } = await makeSut();
+    expect(sut.execute.bind(sut)).toBeDefined();
+    expect(typeof sut.execute).toBe('function');
+  });
 });
