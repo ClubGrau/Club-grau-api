@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  CreateEmployeeController,
-  CreateEmployeeUseCase,
-  EmployeeRole,
-} from './create-employee.controller';
+import { CreateEmployeeController } from './create-employee.controller';
 import { BadRequest } from '../http-exceptions/bad-request';
+import { CreateEmployeeUseCase } from '../../application/usecases/create-employee.usecase';
+import { EmployeeModel } from '../../domain/models/employee';
 
 const makeStubs = () => ({
   createEmployeeUseCaseStub: {
@@ -46,7 +44,7 @@ describe('CreateEmployeeController', () => {
     const request = {
       name: '',
       email: 'john.doe@example.com',
-      role: 'admin' as EmployeeRole,
+      role: 'admin' as EmployeeModel.Role,
       password: 'P@ssword123',
       passwordConfirmation: 'P@ssword123',
     };
@@ -60,7 +58,7 @@ describe('CreateEmployeeController', () => {
     const request = {
       name: 'John Doe',
       email: '',
-      role: 'admin' as EmployeeRole,
+      role: 'admin' as EmployeeModel.Role,
       password: 'P@ssword123',
       passwordConfirmation: 'P@ssword123',
     };
@@ -89,7 +87,7 @@ describe('CreateEmployeeController', () => {
     const request = {
       name: 'John Doe',
       email: 'john.doe@example.com',
-      role: 'admin' as EmployeeRole,
+      role: 'admin' as EmployeeModel.Role,
       password: '',
       passwordConfirmation: 'P@ssword123',
     };
@@ -103,7 +101,7 @@ describe('CreateEmployeeController', () => {
     const request = {
       name: 'John Doe',
       email: 'john.doe@example.com',
-      role: 'admin' as EmployeeRole,
+      role: 'admin' as EmployeeModel.Role,
       password: 'P@ssword123',
       passwordConfirmation: '',
     };
@@ -119,7 +117,7 @@ describe('CreateEmployeeController', () => {
     const request = {
       name: 'John Doe',
       email: 'john.doe@example.com',
-      role: 'admin' as EmployeeRole,
+      role: 'admin' as EmployeeModel.Role,
       password: 'P@ssword123',
       passwordConfirmation: 'P@ssword123',
     };
