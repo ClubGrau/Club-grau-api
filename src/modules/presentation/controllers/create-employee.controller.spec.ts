@@ -1,14 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   CreateEmployeeController,
+  CreateEmployeeUseCase,
   EmployeeRole,
 } from './create-employee.controller';
 import { BadRequest } from '../http-exceptions/bad-request';
 
+const makeStubs = () => ({
+  createEmployeeUseCaseStub: {
+    execute: jest.fn() as jest.MockedFunction<CreateEmployeeUseCase['execute']>,
+  } satisfies CreateEmployeeUseCase,
+});
+
 const makeSut = async () => {
+  const { createEmployeeUseCaseStub } = makeStubs();
   const testModule: TestingModule = await Test.createTestingModule({
     controllers: [CreateEmployeeController],
-    providers: [],
+    providers: [
+      {
+        provide: CreateEmployeeUseCase,
+        useValue: createEmployeeUseCaseStub,
+      },
+    ],
   }).compile();
 
   const sut = testModule.get<CreateEmployeeController>(
@@ -17,6 +30,7 @@ const makeSut = async () => {
 
   return {
     sut,
+    createEmployeeUseCaseStub,
   };
 };
 
@@ -98,5 +112,29 @@ describe('CreateEmployeeController', () => {
     await expect(response).rejects.toThrow(
       'Missing param: passwordConfirmation',
     );
+  });
+
+  it('should call createEmployeeUsecCase with correct values', async () => {
+    const { sut, createEmployeeUseCaseStub } = await makeSut();
+    const request = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeRole,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const createEmployeeUseCaseSpy = jest.spyOn(
+      createEmployeeUseCaseStub,
+      'execute',
+    );
+    await sut.handle(request);
+
+    expect(createEmployeeUseCaseSpy).toHaveBeenCalledWith({
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin',
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    });
   });
 });
