@@ -9,7 +9,7 @@ export namespace EmployeeModel {
     passwordConfirmation: string;
   }
 
-  export interface CreateEmployeeResponseDto {
+  export interface CreatedEmployeeOutput {
     id: string;
     name: string;
     email: string;
@@ -19,5 +19,9 @@ export namespace EmployeeModel {
     nif: number;
     createdAt: string;
     deactivatedAt: string | null;
+  }
+
+  export interface CreateEmployeeResponseDto {
+    id: string;
   }
 }

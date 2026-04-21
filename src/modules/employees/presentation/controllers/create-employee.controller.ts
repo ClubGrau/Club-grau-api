@@ -14,7 +14,9 @@ export class CreateEmployeeController {
   constructor(private readonly createEmployeeUseCase: CreateEmployeeUseCase) {}
 
   @Post()
-  async handle(@Body() request: EmployeeModel.CreateEmployeeRequestDto) {
+  async handle(
+    @Body() request: EmployeeModel.CreateEmployeeRequestDto,
+  ): Promise<EmployeeModel.CreateEmployeeResponseDto> {
     try {
       const requiredFields = [
         'name',
@@ -29,9 +31,9 @@ export class CreateEmployeeController {
         }
       }
 
-      await this.createEmployeeUseCase.execute(request);
+      const response = await this.createEmployeeUseCase.execute(request);
 
-      return Promise.resolve(null);
+      return { id: response.id };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
