@@ -1,12 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EmployeeModel } from '../../domain/models/employee';
-import type { FindActiveEmployeeByEmail } from '../ports/find-active-employee-by-email.port';
+import { CheckEmployeeExistenceService } from '../../domain/services/check-employee-existence.service';
 
 @Injectable()
 export class CreateEmployeeUseCase {
   constructor(
-    @Inject('FIND_ACTIVE_EMPLOYEE_BY_EMAIL')
-    private readonly findActiveEmployeeByEmail: FindActiveEmployeeByEmail,
+    private readonly checkEmployeeExistence: CheckEmployeeExistenceService,
   ) {}
 
   async execute(
@@ -17,17 +16,13 @@ export class CreateEmployeeUseCase {
       throw new Error('Password and passwordConfirmation do not match');
     }
 
-    const isEmployeeExist = await this.findActiveEmployeeByEmail.isExist(
+    const isExistOrInactive = await this.checkEmployeeExistence.check(
       params.email,
     );
-
-    if (isEmployeeExist) {
-      const { isActive } = isEmployeeExist;
-      if (!isActive) {
-        throw new Error('Existent employee is inactive');
-      }
-      throw new Error('Employee already exists');
+    if (isExistOrInactive instanceof Error) {
+      throw isExistOrInactive;
     }
+
     return Promise.resolve({
       id: 'valid_id',
     });
