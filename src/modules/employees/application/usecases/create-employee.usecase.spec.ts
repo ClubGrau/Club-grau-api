@@ -3,6 +3,7 @@ import { CreateEmployeeUseCase } from './create-employee.usecase';
 import { EmployeeModel } from '../../domain/models/employee';
 import { FindActiveEmployeeByEmail } from '../ports/find-active-employee-by-email.port';
 import { CheckEmployeeExistenceService } from '../../domain/services/check-employee-existence.service';
+import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
 
 const makeStubs = () => ({
   findActiveEmployeeByEmailStub: {
@@ -57,6 +58,7 @@ describe('CreateEmployeeUseCase', () => {
     };
 
     const execute = sut.execute(params);
+    await expect(execute).rejects.toBeInstanceOf(PasswordNotMatchError);
     await expect(execute).rejects.toThrow(
       'Password and passwordConfirmation do not match',
     );

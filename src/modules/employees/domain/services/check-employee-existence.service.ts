@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { FindActiveEmployeeByEmail } from '../../application/ports/find-active-employee-by-email.port';
+import { ExistEmployeeError } from '../errors/exist-employee.error';
+import { InactiveEmployeeError } from '../errors/inactive-employee.error';
 
 @Injectable()
 export class CheckEmployeeExistenceService {
@@ -13,8 +15,8 @@ export class CheckEmployeeExistenceService {
 
     if (!existingEmployee) return null;
     if (!existingEmployee.isActive) {
-      return new Error('Existent employee is inactive');
+      return new InactiveEmployeeError();
     }
-    return new Error('Employee already exists');
+    return new ExistEmployeeError();
   }
 }

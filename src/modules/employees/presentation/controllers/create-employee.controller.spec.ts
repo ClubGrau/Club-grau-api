@@ -4,6 +4,7 @@ import { BadRequest } from '../http-exceptions/bad-request';
 import { CreateEmployeeUseCase } from '../../application/usecases/create-employee.usecase';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EmployeeModel } from '../../domain/models/employee';
+import { MissingParamError } from '../errors/missing-param.error';
 
 const makeStubs = () => ({
   createEmployeeUseCaseStub: {
@@ -55,7 +56,9 @@ describe('CreateEmployeeController', () => {
     };
     const response = sut.handle(request);
     await expect(response).rejects.toThrow(BadRequest);
-    await expect(response).rejects.toThrow('Missing param: name');
+    await expect(response).rejects.toThrow(
+      new MissingParamError('name').message,
+    );
   });
 
   it('should return badRequest if email is not provided', async () => {
@@ -69,7 +72,9 @@ describe('CreateEmployeeController', () => {
     };
     const response = sut.handle(request);
     await expect(response).rejects.toThrow(BadRequest);
-    await expect(response).rejects.toThrow('Missing param: email');
+    await expect(response).rejects.toThrow(
+      new MissingParamError('email').message,
+    );
   });
 
   it('should return badRequest if role is not provided', async () => {
@@ -84,7 +89,9 @@ describe('CreateEmployeeController', () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = sut.handle(request as any);
     await expect(response).rejects.toThrow(BadRequest);
-    await expect(response).rejects.toThrow('Missing param: role');
+    await expect(response).rejects.toThrow(
+      new MissingParamError('role').message,
+    );
   });
 
   it('should return badRequest if password is not provided', async () => {
@@ -98,7 +105,9 @@ describe('CreateEmployeeController', () => {
     };
     const response = sut.handle(request);
     await expect(response).rejects.toThrow(BadRequest);
-    await expect(response).rejects.toThrow('Missing param: password');
+    await expect(response).rejects.toThrow(
+      new MissingParamError('password').message,
+    );
   });
 
   it('should return badRequest if passwordConfirmation is not provided', async () => {
@@ -113,7 +122,7 @@ describe('CreateEmployeeController', () => {
     const response = sut.handle(request);
     await expect(response).rejects.toThrow(BadRequest);
     await expect(response).rejects.toThrow(
-      'Missing param: passwordConfirmation',
+      new MissingParamError('passwordConfirmation').message,
     );
   });
 
