@@ -3,6 +3,7 @@ import { CreateEmployeeController } from '../presentation/controllers/create-emp
 import { CreateEmployeeUseCase } from '../application/usecases/create-employee.usecase';
 import { FindActiveEmployeeByEmail } from '../application/ports/find-active-employee-by-email.port';
 import { EmployeeModel } from '../domain/models/employee';
+import { CheckEmployeeExistenceService } from '../domain/services/check-employee-existence.service';
 
 // mover metodo para o repositório
 class FindActiveEmployeeByEmailMock implements FindActiveEmployeeByEmail {
@@ -17,6 +18,7 @@ class FindActiveEmployeeByEmailMock implements FindActiveEmployeeByEmail {
   controllers: [CreateEmployeeController],
   providers: [
     CreateEmployeeUseCase,
+    CheckEmployeeExistenceService,
     {
       provide: 'FIND_ACTIVE_EMPLOYEE_BY_EMAIL',
       useClass: FindActiveEmployeeByEmailMock,
