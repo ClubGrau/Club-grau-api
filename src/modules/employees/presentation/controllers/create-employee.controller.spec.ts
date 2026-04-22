@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CreateEmployeeController } from './create-employee.controller';
 import { BadRequest } from '../http-exceptions/bad-request';
 import { CreateEmployeeUseCase } from '../../application/usecases/create-employee.usecase';
-import { InternalServerErrorException } from '@nestjs/common';
 import { EmployeeModel } from '../../domain/models/employee';
 import { MissingParamError } from '../errors/missing-param.error';
+import { ServerError } from '../http-exceptions/server-error';
 
 const makeStubs = () => ({
   createEmployeeUseCaseStub: {
@@ -165,8 +165,8 @@ describe('CreateEmployeeController', () => {
         throw new Error('Server error');
       });
     const response = sut.handle(request);
-    await expect(response).rejects.toThrow(InternalServerErrorException);
-    await expect(response).rejects.toThrow('Internal Server Error');
+    await expect(response).rejects.toThrow(ServerError);
+    await expect(response).rejects.toThrow('Internal server error');
   });
 
   it('should return an id for employee created on success', async () => {
