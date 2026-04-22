@@ -1,8 +1,8 @@
 import { Body, Controller, HttpException, Post } from '@nestjs/common';
-import { BadRequest } from '../http-exceptions/bad-request';
 import { CreateEmployeeUseCase } from '../../application/usecases/create-employee.usecase';
 import type { EmployeeModel } from '../../domain/models/employee';
 import { MissingParamError } from '../errors/missing-param.error';
+import { BadRequest } from '../http-exceptions/bad-request';
 import { ServerError } from '../http-exceptions/server-error';
 
 @Controller('employee')
