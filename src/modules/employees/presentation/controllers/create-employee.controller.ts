@@ -1,14 +1,9 @@
-import {
-  Body,
-  Controller,
-  HttpException,
-  InternalServerErrorException,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, HttpException, Post } from '@nestjs/common';
 import { BadRequest } from '../http-exceptions/bad-request';
 import { CreateEmployeeUseCase } from '../../application/usecases/create-employee.usecase';
 import type { EmployeeModel } from '../../domain/models/employee';
 import { MissingParamError } from '../errors/missing-param.error';
+import { ServerError } from '../http-exceptions/server-error';
 
 @Controller('employee')
 export class CreateEmployeeController {
@@ -39,7 +34,8 @@ export class CreateEmployeeController {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException();
+      console.error(error);
+      throw new ServerError();
     }
   }
 }
