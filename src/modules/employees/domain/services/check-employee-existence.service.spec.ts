@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CheckEmployeeExistenceService } from './check-employee-existence.service';
 import { FindActiveEmployeeByEmail } from '../../application/ports/find-active-employee-by-email.port';
+import { ExistEmployeeError } from '../errors/exist-employee.error';
+import { InactiveEmployeeError } from '../errors/inactive-employee.error';
 
 const makeStubs = () => ({
   findActiveEmployeeByEmailStub: {
@@ -59,7 +61,7 @@ describe('CheckEmployeeExistenceService', () => {
     });
 
     const result = await sut.check(email);
-    expect(result).toBeInstanceOf(Error);
+    expect(result).toBeInstanceOf(InactiveEmployeeError);
     expect(result?.message).toBe('Existent employee is inactive');
   });
 
@@ -72,7 +74,7 @@ describe('CheckEmployeeExistenceService', () => {
       isActive: true,
     });
     const result = await sut.check(email);
-    expect(result).toBeInstanceOf(Error);
+    expect(result).toBeInstanceOf(ExistEmployeeError);
     expect(result?.message).toBe('Employee already exists');
   });
 

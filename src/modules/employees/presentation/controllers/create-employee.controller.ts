@@ -8,6 +8,7 @@ import {
 import { BadRequest } from '../http-exceptions/bad-request';
 import { CreateEmployeeUseCase } from '../../application/usecases/create-employee.usecase';
 import type { EmployeeModel } from '../../domain/models/employee';
+import { MissingParamError } from '../errors/missing-param.error';
 
 @Controller('employee')
 export class CreateEmployeeController {
@@ -27,7 +28,7 @@ export class CreateEmployeeController {
       ];
       for (const field of requiredFields) {
         if (!request[field]) {
-          throw new BadRequest(field);
+          throw new BadRequest(new MissingParamError(field).message);
         }
       }
 

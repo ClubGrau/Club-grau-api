@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EmployeeModel } from '../../domain/models/employee';
 import { CheckEmployeeExistenceService } from '../../domain/services/check-employee-existence.service';
+import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
 
 @Injectable()
 export class CreateEmployeeUseCase {
@@ -13,7 +14,7 @@ export class CreateEmployeeUseCase {
   ): Promise<EmployeeModel.CreateEmployeeResponseDto> {
     const { password, passwordConfirmation } = params;
     if (password !== passwordConfirmation) {
-      throw new Error('Password and passwordConfirmation do not match');
+      throw new PasswordNotMatchError();
     }
 
     const isExistOrInactive = await this.checkEmployeeExistence.check(
