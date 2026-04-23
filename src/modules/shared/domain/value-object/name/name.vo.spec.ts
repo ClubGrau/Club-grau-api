@@ -1,3 +1,4 @@
+import { InvalidParamFormatError } from '../../../../employees/domain/errors/invalid-param-format.error';
 import { Name } from './name.vo';
 
 const makeSut = (): typeof Name => {
@@ -24,5 +25,14 @@ describe('Name Value Object', () => {
     const sut = makeSut();
     const nameOrError = sut.validate('   ');
     expect(nameOrError).toEqual(false);
+  });
+
+  it('should not create an employee with name that is only whitespace', () => {
+    const sut = makeSut();
+    const employeeOrError = sut.create(' ');
+    expect(employeeOrError).toBeInstanceOf(InvalidParamFormatError);
+    expect((employeeOrError as Error).message).toBe(
+      'Invalid param format: name cannot be only whitespace',
+    );
   });
 });
