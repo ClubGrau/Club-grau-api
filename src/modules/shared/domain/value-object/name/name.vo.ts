@@ -21,7 +21,7 @@ export class Name extends ValueObject<string> {
       return new InvalidParamFormatError('name cannot be only whitespace');
     }
 
-    if (name.length < 3) {
+    if (name.length < 3 || name.length > 255) {
       return new InvalidParamNameLengthError();
     }
     return null;
