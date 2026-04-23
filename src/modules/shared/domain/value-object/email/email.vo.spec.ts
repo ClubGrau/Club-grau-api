@@ -62,4 +62,14 @@ describe('Email Value Object', () => {
       'Invalid email format: domain part must not exceed 63 characters',
     );
   });
+
+  it('should return an error if email contains invalid characters', () => {
+    const sut = makeSut();
+    const email = 'a@b.c';
+    const emailOrError = sut.validate(email);
+    expect(emailOrError).toBeInstanceOf(InvalidEmailFormatError);
+    expect((emailOrError as Error).message).toBe(
+      'Invalid email format: email contains invalid characters',
+    );
+  });
 });
