@@ -4,6 +4,20 @@ import { ValueObject } from '../value-object';
 export class Email extends ValueObject<string> {
   private static TEST_STRING =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+
+  private constructor(email: string) {
+    super(email);
+  }
+
+  static create(email: string): InvalidEmailFormatError | Email {
+    const error = Email.validate(email);
+    if (error) {
+      return error;
+    }
+
+    return new Email(email);
+  }
+
   static validate(email: string): InvalidEmailFormatError | null {
     const emailRegex = this.TEST_STRING;
     const [account, domain] = email.split('@');
