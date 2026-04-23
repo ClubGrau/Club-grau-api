@@ -48,4 +48,11 @@ describe('Employee Entity', () => {
       'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
     );
   });
+
+  it('should create an employee with an auto incremented id', () => {
+    const { sut, employeeProps } = makeSut();
+    const employeeOrError = sut.create(employeeProps);
+    expect(employeeOrError).toBeInstanceOf(Employee);
+    expect((employeeOrError as Employee).id).toBeDefined();
+  });
 });
