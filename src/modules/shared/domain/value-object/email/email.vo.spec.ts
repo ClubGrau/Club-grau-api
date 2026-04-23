@@ -42,4 +42,14 @@ describe('Email Value Object', () => {
       'Invalid email format: email must not start with a dot (.)',
     );
   });
+
+  it('should return an error if the account part (before @) is longer than 64 characters', () => {
+    const sut = makeSut();
+    const email = 'a'.repeat(65) + '@example.com';
+    const emailOrError = sut.validate(email);
+    expect(emailOrError).toBeInstanceOf(InvalidEmailFormatError);
+    expect((emailOrError as Error).message).toBe(
+      'Invalid email format: account part must not exceed 64 characters',
+    );
+  });
 });
