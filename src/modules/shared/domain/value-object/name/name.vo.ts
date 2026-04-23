@@ -1,4 +1,5 @@
 import { InvalidParamFormatError } from '../../../../employees/domain/errors/invalid-param-format.error';
+import { InvalidParamNameLengthError } from '../../../../employees/domain/errors/invalid-param-name-length.error';
 import { ValueObject } from '../value-object';
 
 export class Name extends ValueObject<string> {
@@ -18,6 +19,10 @@ export class Name extends ValueObject<string> {
   static validate(name: string): Error | null {
     if (name.trim() === '') {
       return new InvalidParamFormatError('name cannot be only whitespace');
+    }
+
+    if (name.length < 3) {
+      return new InvalidParamNameLengthError();
     }
     return null;
   }
