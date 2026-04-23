@@ -24,7 +24,10 @@ describe('Name Value Object', () => {
   it('should return false if name is created with whitespace only', () => {
     const sut = makeSut();
     const nameOrError = sut.validate('   ');
-    expect(nameOrError).toEqual(false);
+    expect(nameOrError).toBeInstanceOf(InvalidParamFormatError);
+    expect((nameOrError as Error).message).toBe(
+      'Invalid param format: name cannot be only whitespace',
+    );
   });
 
   it('should not create an employee with name that is only whitespace', () => {

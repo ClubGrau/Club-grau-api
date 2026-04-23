@@ -7,16 +7,18 @@ export class Name extends ValueObject<string> {
   }
 
   static create(name: string): Error | Name {
-    if (!Name.validate(name)) {
-      return new InvalidParamFormatError('name cannot be only whitespace');
+    const error = Name.validate(name);
+    if (error) {
+      return error;
     }
+
     return new Name(name);
   }
 
-  static validate(name: string): boolean {
+  static validate(name: string): Error | null {
     if (name.trim() === '') {
-      return false;
+      return new InvalidParamFormatError('name cannot be only whitespace');
     }
-    return true;
+    return null;
   }
 }
