@@ -31,4 +31,10 @@ describe('Employee Entity', () => {
     const employeeOrError = sut.create({ ...employeeProps, name: '   ' });
     expect(employeeOrError).toBeInstanceOf(Error);
   });
+
+  it('should return error if name is shorter than 3 characters', () => {
+    const { sut, employeeProps } = makeSut();
+    const employeeOrError = sut.create({ ...employeeProps, name: 'Jo' });
+    expect(employeeOrError).toBeInstanceOf(Error);
+  });
 });
