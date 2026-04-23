@@ -11,4 +11,10 @@ describe('Name Value Object', () => {
     expect(sut).toBeDefined();
     expect(sut).toBeInstanceOf(Function);
   });
+
+  it('should call the constructor with the correct value', () => {
+    const sut = makeSut();
+    const name = new sut('John Doe');
+    expect(name.getValue()).toBe('John Doe');
+  });
 });
