@@ -32,4 +32,14 @@ describe('Email Value Object', () => {
       'Invalid email format: email must not exceed 256 characters',
     );
   });
+
+  it('should return an error if email value starts with a dot (.)', () => {
+    const sut = makeSut();
+    const email = '.john.doe@example.com';
+    const emailOrError = sut.validate(email);
+    expect(emailOrError).toBeInstanceOf(InvalidEmailFormatError);
+    expect((emailOrError as Error).message).toBe(
+      'Invalid email format: email must not start with a dot (.)',
+    );
+  });
 });
