@@ -1,4 +1,5 @@
 import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
+import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 
 interface EmployeeProps {
   name: string;
@@ -18,6 +19,11 @@ export class Employee {
     if (input.name.trim() === '') {
       return new InvalidParamFormatError('name cannot be only whitespace');
     }
+
+    if (input.name.length < 3) {
+      return new InvalidParamNameLengthError();
+    }
+
     return new Employee({ name: input.name });
   }
 }
