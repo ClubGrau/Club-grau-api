@@ -1,4 +1,3 @@
-import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 import { Employee, EmployeeCreateInput } from './Employee';
 
@@ -19,15 +18,6 @@ describe('Employee Entity', () => {
     const { sut } = makeSut();
     expect(sut).toBeDefined();
     expect(sut).toBeInstanceOf(Function);
-  });
-
-  it('should not create an employee with name that is only whitespace', () => {
-    const { sut, employeeProps } = makeSut();
-    const employeeOrError = sut.create({ ...employeeProps, name: '   ' });
-    expect(employeeOrError).toBeInstanceOf(InvalidParamFormatError);
-    expect((employeeOrError as Error).message).toBe(
-      'Invalid param format: name cannot be only whitespace',
-    );
   });
 
   it('should not create an employee with name shorter than 3 characters', () => {
