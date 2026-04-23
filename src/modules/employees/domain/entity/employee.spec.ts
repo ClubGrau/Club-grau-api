@@ -1,3 +1,4 @@
+import { InvalidEmailFormatError } from '../../../shared/domain/errors/invalid-email-format.error';
 import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 import { Employee, EmployeeCreateInput } from './Employee';
@@ -5,6 +6,7 @@ import { Employee, EmployeeCreateInput } from './Employee';
 const makeSut = () => {
   const employeeProps: EmployeeCreateInput = {
     name: 'John Doe',
+    email: 'john.doe@example.com',
   };
   const sut = Employee;
 
@@ -53,6 +55,15 @@ describe('Employee Entity', () => {
       const name = 'John Doe';
       const employeeOrError = sut.create({ ...employeeProps, name });
       expect(employeeOrError).toBeInstanceOf(Employee);
+    });
+  });
+
+  describe('Emplyee email validation', () => {
+    it('should return error if email starts with a dot (.)', () => {
+      const { sut, employeeProps } = makeSut();
+      const email = '.john.doe@example.com';
+      const employeeOrError = sut.create({ ...employeeProps, email });
+      expect(employeeOrError).toBeInstanceOf(InvalidEmailFormatError);
     });
   });
 });
