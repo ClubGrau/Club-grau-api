@@ -35,7 +35,17 @@ describe('Employee Entity', () => {
     const employeeOrError = sut.create({ ...employeeProps, name: 'Jo' });
     expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
     expect((employeeOrError as Error).message).toBe(
-      'Invalid param format: name must be at least 3 characters long',
+      'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
+    );
+  });
+
+  it('should not create an employee with name longer than 255 characters', () => {
+    const { sut, employeeProps } = makeSut();
+    const name = 'J'.repeat(256);
+    const employeeOrError = sut.create({ ...employeeProps, name });
+    expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
+    expect((employeeOrError as Error).message).toBe(
+      'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
     );
   });
 });
