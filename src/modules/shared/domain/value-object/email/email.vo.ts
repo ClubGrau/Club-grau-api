@@ -17,6 +17,12 @@ export class Email extends ValueObject<string> {
       );
     }
 
+    if (email.startsWith('.')) {
+      return new InvalidEmailFormatError(
+        'Invalid email format: email must not start with a dot (.)',
+      );
+    }
+
     return null;
   }
 }
