@@ -88,4 +88,13 @@ describe('Email Value Object', () => {
     const emailOrError = sut.validate('john.doe@example.com');
     expect(emailOrError).toBeNull();
   });
+
+  it('should create a Email instance if valid email is provided', () => {
+    const sut = makeSut();
+    const emailOrError = sut.create('john.doe@example.com');
+    expect(emailOrError).toBeInstanceOf(Email);
+    if (emailOrError instanceof Email) {
+      expect(typeof emailOrError).toBe('object');
+    }
+  });
 });
