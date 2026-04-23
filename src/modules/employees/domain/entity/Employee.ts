@@ -1,9 +1,9 @@
 import { Entity } from '../../../shared/domain/entity/entity';
 import UniqueEntityId from '../../../shared/domain/value-object/id/unique-entity-id.vo';
-import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
+import { Name } from '../../../shared/domain/value-object/name/name.vo';
 
 interface EmployeeProps {
-  name: string;
+  name: Name;
 }
 export interface EmployeeCreateInput {
   name: string;
@@ -18,10 +18,11 @@ export class Employee extends Entity<EmployeeProps> {
   }
 
   static create(input: EmployeeCreateInput): Employee | Error {
-    if (input.name.length < 3 || input.name.length > 255) {
-      return new InvalidParamNameLengthError();
+    const nameOrError = Name.create(input.name);
+    if (nameOrError instanceof Error) {
+      return nameOrError;
     }
 
-    return new Employee({ name: input.name });
+    return new Employee({ name: nameOrError });
   }
 }
