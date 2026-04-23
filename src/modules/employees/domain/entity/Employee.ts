@@ -20,7 +20,7 @@ export class Employee {
       return new InvalidParamFormatError('name cannot be only whitespace');
     }
 
-    if (input.name.length < 3) {
+    if (input.name.length < 3 || input.name.length > 255) {
       return new InvalidParamNameLengthError();
     }
 
