@@ -13,6 +13,16 @@ describe('Email Value Object', () => {
     expect(sut).toBeInstanceOf(Function);
   });
 
+  it('should call the constructor with the correct value', () => {
+    const emailOrError: InvalidEmailFormatError | Email = Email.create(
+      'john.doe@example.com',
+    );
+    if (emailOrError instanceof Error) {
+      throw emailOrError;
+    }
+    expect(emailOrError.getValue()).toBe('john.doe@example.com');
+  });
+
   it('should return an error if email value is without @ sign', () => {
     const sut = makeSut();
     const email = 'john.doeexample.com';
