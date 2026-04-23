@@ -82,4 +82,10 @@ describe('Email Value Object', () => {
       'Invalid email format: email contains invalid characters',
     );
   });
+
+  it('should validate return null if no errors found', () => {
+    const sut = makeSut();
+    const emailOrError = sut.validate('john.doe@example.com');
+    expect(emailOrError).toBeNull();
+  });
 });
