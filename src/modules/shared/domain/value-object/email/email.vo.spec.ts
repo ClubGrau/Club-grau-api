@@ -52,4 +52,14 @@ describe('Email Value Object', () => {
       'Invalid email format: account part must not exceed 64 characters',
     );
   });
+
+  it('should return an error if any domain part (between dots) is longer than 63 characters', () => {
+    const sut = makeSut();
+    const email = 'john.doe@' + 'a'.repeat(64) + '.com';
+    const emailOrError = sut.validate(email);
+    expect(emailOrError).toBeInstanceOf(InvalidEmailFormatError);
+    expect((emailOrError as Error).message).toBe(
+      'Invalid email format: domain part must not exceed 63 characters',
+    );
+  });
 });
