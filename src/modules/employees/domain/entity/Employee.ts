@@ -1,3 +1,5 @@
+import { Entity } from '../../../shared/domain/entity/entity';
+import UniqueEntityId from '../../../shared/domain/value-object/id/unique-entity-id.vo';
 import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 
@@ -8,11 +10,12 @@ export interface EmployeeCreateInput {
   name: string;
 }
 
-export class Employee {
-  private readonly props: EmployeeProps;
-
-  constructor(props: EmployeeProps) {
-    this.props = props;
+export class Employee extends Entity<EmployeeProps> {
+  constructor(
+    public readonly props: EmployeeProps,
+    id?: UniqueEntityId,
+  ) {
+    super(props, id);
   }
 
   static create(input: EmployeeCreateInput): Employee | Error {
