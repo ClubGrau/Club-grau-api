@@ -47,5 +47,12 @@ describe('Employee Entity', () => {
       const employeeOrError = sut.create({ ...employeeProps, name: longName });
       expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
     });
+
+    it('should create an employee if name is valid', () => {
+      const { sut, employeeProps } = makeSut();
+      const name = 'John Doe';
+      const employeeOrError = sut.create({ ...employeeProps, name });
+      expect(employeeOrError).toBeInstanceOf(Employee);
+    });
   });
 });
