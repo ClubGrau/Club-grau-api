@@ -22,4 +22,14 @@ describe('Email Value Object', () => {
       'Invalid email format: email must contain an "@" symbol',
     );
   });
+
+  it('should return an error if email value has more than 256 characters', () => {
+    const sut = makeSut();
+    const email = 'a'.repeat(247) + '@example.com';
+    const emailOrError = sut.validate(email);
+    expect(emailOrError).toBeInstanceOf(InvalidEmailFormatError);
+    expect((emailOrError as Error).message).toBe(
+      'Invalid email format: email must not exceed 256 characters',
+    );
+  });
 });
