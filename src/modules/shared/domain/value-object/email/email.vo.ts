@@ -29,6 +29,12 @@ export class Email extends ValueObject<string> {
       );
     }
 
+    if (domain.split('.').some((part) => part.length > 63)) {
+      return new InvalidEmailFormatError(
+        'Invalid email format: domain part must not exceed 63 characters',
+      );
+    }
+
     return null;
   }
 }
