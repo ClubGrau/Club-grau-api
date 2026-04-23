@@ -2,7 +2,10 @@ import { InvalidEmailFormatError } from '../../errors/invalid-email-format.error
 import { ValueObject } from '../value-object';
 
 export class Email extends ValueObject<string> {
+  private static TEST_STRING =
+    /^[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   static validate(email: string): InvalidEmailFormatError | null {
+    const emailRegex = this.TEST_STRING;
     const [account, domain] = email.split('@');
 
     if (!account || !domain) {
@@ -32,6 +35,12 @@ export class Email extends ValueObject<string> {
     if (domain.split('.').some((part) => part.length > 63)) {
       return new InvalidEmailFormatError(
         'Invalid email format: domain part must not exceed 63 characters',
+      );
+    }
+
+    if (!emailRegex.test(email)) {
+      return new InvalidEmailFormatError(
+        'Invalid email format: email contains invalid characters',
       );
     }
 
