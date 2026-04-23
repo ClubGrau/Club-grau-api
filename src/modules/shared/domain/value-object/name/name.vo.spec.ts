@@ -39,4 +39,10 @@ describe('Name Value Object', () => {
       'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
     );
   });
+
+  it('should validate return null if no errors found', () => {
+    const sut = makeSut();
+    const nameOrError = sut.validate('John Doe');
+    expect(nameOrError).toBeNull();
+  });
 });
