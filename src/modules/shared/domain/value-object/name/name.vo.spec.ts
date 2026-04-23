@@ -45,4 +45,13 @@ describe('Name Value Object', () => {
     const nameOrError = sut.validate('John Doe');
     expect(nameOrError).toBeNull();
   });
+
+  it('should create a Name instance if valid name is provided', () => {
+    const sut = makeSut();
+    const nameOrError = sut.create('John Doe');
+    expect(nameOrError).toBeInstanceOf(Name);
+    if (nameOrError instanceof Name) {
+      expect(typeof nameOrError).toBe('object');
+    }
+  });
 });
