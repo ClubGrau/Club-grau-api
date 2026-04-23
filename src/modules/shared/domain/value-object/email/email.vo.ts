@@ -23,6 +23,12 @@ export class Email extends ValueObject<string> {
       );
     }
 
+    if (account.length > 64) {
+      return new InvalidEmailFormatError(
+        'Invalid email format: account part must not exceed 64 characters',
+      );
+    }
+
     return null;
   }
 }
