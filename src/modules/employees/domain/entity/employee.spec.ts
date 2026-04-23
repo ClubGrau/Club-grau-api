@@ -28,22 +28,24 @@ describe('Employee Entity', () => {
     expect((employeeOrError as Employee).id).toBeDefined();
   });
 
-  it('should return error if name is only whitespace', () => {
-    const { sut, employeeProps } = makeSut();
-    const employeeOrError = sut.create({ ...employeeProps, name: '   ' });
-    expect(employeeOrError).toBeInstanceOf(InvalidParamFormatError);
-  });
+  describe('Employee name validation', () => {
+    it('should return error if name is only whitespace', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create({ ...employeeProps, name: '   ' });
+      expect(employeeOrError).toBeInstanceOf(InvalidParamFormatError);
+    });
 
-  it('should return error if name is shorter than 3 characters', () => {
-    const { sut, employeeProps } = makeSut();
-    const employeeOrError = sut.create({ ...employeeProps, name: 'Jo' });
-    expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
-  });
+    it('should return error if name is shorter than 3 characters', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create({ ...employeeProps, name: 'Jo' });
+      expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
+    });
 
-  it('should return error if name is longer than 255 characters', () => {
-    const { sut, employeeProps } = makeSut();
-    const longName = 'J'.repeat(256);
-    const employeeOrError = sut.create({ ...employeeProps, name: longName });
-    expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
+    it('should return error if name is longer than 255 characters', () => {
+      const { sut, employeeProps } = makeSut();
+      const longName = 'J'.repeat(256);
+      const employeeOrError = sut.create({ ...employeeProps, name: longName });
+      expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
+    });
   });
 });
