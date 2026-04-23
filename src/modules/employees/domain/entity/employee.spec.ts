@@ -1,3 +1,5 @@
+import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
+import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 import { Employee, EmployeeCreateInput } from './Employee';
 
 const makeSut = () => {
@@ -29,12 +31,19 @@ describe('Employee Entity', () => {
   it('should return error if name is only whitespace', () => {
     const { sut, employeeProps } = makeSut();
     const employeeOrError = sut.create({ ...employeeProps, name: '   ' });
-    expect(employeeOrError).toBeInstanceOf(Error);
+    expect(employeeOrError).toBeInstanceOf(InvalidParamFormatError);
   });
 
   it('should return error if name is shorter than 3 characters', () => {
     const { sut, employeeProps } = makeSut();
     const employeeOrError = sut.create({ ...employeeProps, name: 'Jo' });
-    expect(employeeOrError).toBeInstanceOf(Error);
+    expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
+  });
+
+  it('should return error if name is longer than 255 characters', () => {
+    const { sut, employeeProps } = makeSut();
+    const longName = 'J'.repeat(256);
+    const employeeOrError = sut.create({ ...employeeProps, name: longName });
+    expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
   });
 });
