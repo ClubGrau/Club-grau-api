@@ -40,6 +40,16 @@ describe('Name Value Object', () => {
     );
   });
 
+  it('should return error if name is created with length longer than 255 characters', () => {
+    const sut = makeSut();
+    const longName = 'J'.repeat(256);
+    const nameOrError = sut.create(longName);
+    expect(nameOrError).toBeInstanceOf(InvalidParamNameLengthError);
+    expect((nameOrError as Error).message).toBe(
+      'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
+    );
+  });
+
   it('should validate return null if no errors found', () => {
     const sut = makeSut();
     const nameOrError = sut.validate('John Doe');
