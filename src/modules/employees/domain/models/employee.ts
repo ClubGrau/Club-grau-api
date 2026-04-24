@@ -9,6 +9,7 @@ export namespace EmployeeModel {
     name: string;
     email: string;
     role: Role;
+    nif?: number | null;
     password: string;
     passwordConfirmation: string;
   }
