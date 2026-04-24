@@ -4,8 +4,8 @@ import { CreateEmployeeUseCase } from '../application/usecases/create-employee.u
 import { FindActiveEmployeeByEmail } from '../application/ports/find-active-employee-by-email.port';
 import { EmployeeModel } from '../domain/models/employee';
 import { CheckEmployeeExistenceService } from '../domain/services/check-employee-existence.service';
-import { EncrypterPort } from '../infra/cryptograph/ports/encrypter.port';
 import { CreateEmployeeRepositoryPort } from '../application/ports/create-employee.repository.port';
+import { makeAdaptersProvider } from '../infra/providers/adapters.provider';
 
 // mover metodo para o repositório
 class CreateEmployeeRepositoryMock implements CreateEmployeeRepositoryPort {
@@ -23,26 +23,16 @@ class FindActiveEmployeeByEmailMock implements FindActiveEmployeeByEmail {
   }
 }
 
-class EncrypterMock implements EncrypterPort {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async hash(value: string): Promise<string> {
-    return Promise.resolve('hashedValue');
-  }
-}
-
 @Module({
   imports: [],
   controllers: [CreateEmployeeController],
   providers: [
     CreateEmployeeUseCase,
     CheckEmployeeExistenceService,
+    ...makeAdaptersProvider(),
     {
       provide: 'FIND_ACTIVE_EMPLOYEE_BY_EMAIL',
       useClass: FindActiveEmployeeByEmailMock,
-    },
-    {
-      provide: 'ENCRYPTER_PORT',
-      useClass: EncrypterMock,
     },
     {
       provide: 'CREATE_EMPLOYEE_REPOSITORY_PORT',

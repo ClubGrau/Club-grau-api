@@ -6,7 +6,7 @@ import { PasswordNotMatchError } from '../../domain/errors/password-not-match.er
 import { ExistEmployeeError } from '../../domain/errors/exist-employee.error';
 import { InactiveEmployeeError } from '../../domain/errors/inactive-employee.error';
 import { InvalidParamNameLengthError } from '../../domain/errors/invalid-param-name-length.error';
-import { EncrypterPort } from '../../infra/cryptograph/ports/encrypter.port';
+import { EncrypterPort } from '../../../shared/infra/cryptograph/ports/encrypter.port';
 import { CreateEmployeeRepositoryPort } from '../ports/create-employee.repository.port';
 
 const makeSub = () => ({

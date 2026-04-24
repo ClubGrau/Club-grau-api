@@ -3,7 +3,7 @@ import { EmployeeModel } from '../../domain/models/employee';
 import { CheckEmployeeExistenceService } from '../../domain/services/check-employee-existence.service';
 import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
 import { Employee } from '../../domain/entity/Employee';
-import type { EncrypterPort } from '../../infra/cryptograph/ports/encrypter.port';
+import type { EncrypterPort } from '../../../shared/infra/cryptograph/ports/encrypter.port';
 import type { CreateEmployeeRepositoryPort } from '../ports/create-employee.repository.port';
 
 @Injectable()
