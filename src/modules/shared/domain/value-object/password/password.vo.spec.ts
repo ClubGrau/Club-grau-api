@@ -1,4 +1,4 @@
-import { InvalidParamFormatError } from '../../../../employees/domain/errors/invalid-param-format.error';
+import { InvalidPasswordFormatError } from '../../errors/invalid-password-format.error';
 import { Password } from './password.vo';
 
 const makeSut = () => {
@@ -24,9 +24,18 @@ describe('Password Value Object', () => {
   it('should return error if password is created with whitespace only', () => {
     const sut = makeSut();
     const passwordOrError = sut.validate('   ');
-    expect(passwordOrError).toBeInstanceOf(InvalidParamFormatError);
+    expect(passwordOrError).toBeInstanceOf(InvalidPasswordFormatError);
     expect((passwordOrError as Error).message).toBe(
       'Invalid param format: password cannot be only whitespace',
+    );
+  });
+
+  it('should return an error if password is shorter than 6 characters', () => {
+    const sut = makeSut();
+    const passwordOrError = sut.validate('P@ss');
+    expect(passwordOrError).toBeInstanceOf(InvalidPasswordFormatError);
+    expect((passwordOrError as Error).message).toBe(
+      'Invalid param format: password cannot be shorter than 6 characters',
     );
   });
 });
