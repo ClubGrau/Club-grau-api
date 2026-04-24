@@ -38,4 +38,13 @@ describe('Password Value Object', () => {
       'Invalid param format: password cannot be shorter than 6 characters',
     );
   });
+
+  it('should return an error if password does not have one uppercase letter at least', () => {
+    const sut = makeSut();
+    const passwordOrError = sut.validate('p@ssword');
+    expect(passwordOrError).toBeInstanceOf(InvalidPasswordFormatError);
+    expect((passwordOrError as Error).message).toBe(
+      'Invalid param format: password must have at least one uppercase letter',
+    );
+  });
 });
