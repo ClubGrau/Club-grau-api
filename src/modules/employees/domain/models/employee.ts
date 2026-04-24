@@ -21,6 +21,7 @@ export namespace EmployeeModel {
     role: EmployeeModel.Role;
     isActive?: boolean;
     createdAt?: Date;
+    deactivateAt?: Date | null;
   }
 
   export interface CreatedEmployeeOutput {
