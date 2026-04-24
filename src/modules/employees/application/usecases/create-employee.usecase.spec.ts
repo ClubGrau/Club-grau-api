@@ -11,7 +11,10 @@ import { CreateEmployeeRepositoryPort } from '../ports/create-employee.repositor
 
 const makeSub = () => ({
   checkEmployeeExistenceService: {
-    check: jest.fn() as jest.Mock<Promise<Error | null>, [string]>,
+    check: jest.fn().mockResolvedValue(null) as jest.Mock<
+      Promise<Error | null>,
+      [string]
+    >,
   },
   encrypterStub: {
     hash: jest.fn().mockResolvedValue('hashedPassword') as jest.MockedFunction<
@@ -139,7 +142,7 @@ describe('CreateEmployeeUseCase', () => {
       .spyOn(checkEmployeeExistenceService, 'check')
       .mockResolvedValueOnce(null);
     const execute = sut.execute(params);
-    await expect(execute).resolves.toEqual({ id: 'valid_id' });
+    await expect(execute).resolves.toEqual({ id: 'valid_employee_id' });
   });
 
   it('should return a domain error if Employee.create() fails', async () => {
@@ -231,5 +234,18 @@ describe('CreateEmployeeUseCase', () => {
       .spyOn(createEmplyeeRepositoryStub, 'create')
       .mockRejectedValueOnce(new Error('Repository error'));
     await expect(sut.execute(params)).rejects.toThrow('Repository error');
+  });
+
+  it('should return employee id on success', async () => {
+    const { sut } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const result = await sut.execute(params);
+    expect(result).toEqual({ id: 'valid_employee_id' });
   });
 });
