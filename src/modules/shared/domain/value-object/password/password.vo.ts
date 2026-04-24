@@ -1,4 +1,4 @@
-import { InvalidParamFormatError } from '../../../../employees/domain/errors/invalid-param-format.error';
+import { InvalidPasswordFormatError } from '../../errors/invalid-password-format.error';
 import { ValueObject } from '../value-object';
 
 export class Password extends ValueObject<string> {
@@ -12,7 +12,15 @@ export class Password extends ValueObject<string> {
 
   static validate(password: string): Error | null {
     if (password.trim() === '') {
-      return new InvalidParamFormatError('password cannot be only whitespace');
+      return new InvalidPasswordFormatError(
+        'password cannot be only whitespace',
+      );
+    }
+
+    if (password.length < 6) {
+      return new InvalidPasswordFormatError(
+        'password cannot be shorter than 6 characters',
+      );
     }
     return null;
   }
