@@ -7,6 +7,7 @@ import { ExistEmployeeError } from '../../domain/errors/exist-employee.error';
 import { InactiveEmployeeError } from '../../domain/errors/inactive-employee.error';
 import { InvalidParamNameLengthError } from '../../domain/errors/invalid-param-name-length.error';
 import { EncrypterPort } from '../../infra/cryptograph/ports/encrypter.port';
+import { CreateEmployeeRepositoryPort } from '../ports/create-employee.repository.port';
 
 const makeSub = () => ({
   checkEmployeeExistenceService: {
@@ -17,10 +18,21 @@ const makeSub = () => ({
       EncrypterPort['hash']
     >,
   } satisfies EncrypterPort,
+  createEmplyeeRepositoryStub: {
+    create: jest
+      .fn()
+      .mockResolvedValue({ id: 'valid_employee_id' }) as jest.MockedFunction<
+      CreateEmployeeRepositoryPort['create']
+    >,
+  } satisfies CreateEmployeeRepositoryPort,
 });
 
 const makeSut = async () => {
-  const { checkEmployeeExistenceService, encrypterStub } = makeSub();
+  const {
+    checkEmployeeExistenceService,
+    encrypterStub,
+    createEmplyeeRepositoryStub,
+  } = makeSub();
 
   const testModule: TestingModule = await Test.createTestingModule({
     providers: [
@@ -33,6 +45,10 @@ const makeSut = async () => {
         provide: 'ENCRYPTER_PORT',
         useValue: encrypterStub,
       },
+      {
+        provide: 'CREATE_EMPLOYEE_REPOSITORY_PORT',
+        useValue: createEmplyeeRepositoryStub,
+      },
     ],
   }).compile();
 
@@ -42,6 +58,7 @@ const makeSut = async () => {
     sut,
     checkEmployeeExistenceService,
     encrypterStub,
+    createEmplyeeRepositoryStub,
   };
 };
 
@@ -168,5 +185,36 @@ describe('CreateEmployeeUseCase', () => {
       .spyOn(encrypterStub, 'hash')
       .mockRejectedValueOnce(new Error('Encryption error'));
     await expect(sut.execute(params)).rejects.toThrow('Encryption error');
+  });
+
+  it('should calls saveEmployeeRepository with correct values', async () => {
+    const { sut, createEmplyeeRepositoryStub } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const saveSpy = jest
+      .spyOn(createEmplyeeRepositoryStub, 'create')
+      .mockResolvedValueOnce({
+        id: 'valid_employee_id',
+      });
+    const result = await sut.execute(params);
+    expect(result).not.toBeInstanceOf(Error);
+    expect(saveSpy).toHaveBeenCalledWith({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      id: expect.any(String),
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin',
+      password: 'hashedPassword',
+      nif: null,
+      isActive: true,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      createdAt: expect.any(Date),
+      deactivateAt: null,
+    });
   });
 });
