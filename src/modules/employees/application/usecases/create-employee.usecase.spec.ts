@@ -6,15 +6,21 @@ import { PasswordNotMatchError } from '../../domain/errors/password-not-match.er
 import { ExistEmployeeError } from '../../domain/errors/exist-employee.error';
 import { InactiveEmployeeError } from '../../domain/errors/inactive-employee.error';
 import { InvalidParamNameLengthError } from '../../domain/errors/invalid-param-name-length.error';
+import { EncrypterPort } from '../../infra/cryptograph/ports/encrypter.port';
 
 const makeSub = () => ({
   checkEmployeeExistenceService: {
     check: jest.fn() as jest.Mock<Promise<Error | null>, [string]>,
   },
+  encrypterStub: {
+    hash: jest.fn().mockResolvedValue('hashedPassword') as jest.MockedFunction<
+      EncrypterPort['hash']
+    >,
+  } satisfies EncrypterPort,
 });
 
 const makeSut = async () => {
-  const { checkEmployeeExistenceService } = makeSub();
+  const { checkEmployeeExistenceService, encrypterStub } = makeSub();
 
   const testModule: TestingModule = await Test.createTestingModule({
     providers: [
@@ -22,6 +28,10 @@ const makeSut = async () => {
       {
         provide: CheckEmployeeExistenceService,
         useValue: checkEmployeeExistenceService,
+      },
+      {
+        provide: 'ENCRYPTER_PORT',
+        useValue: encrypterStub,
       },
     ],
   }).compile();
@@ -31,6 +41,7 @@ const makeSut = async () => {
   return {
     sut,
     checkEmployeeExistenceService,
+    encrypterStub,
   };
 };
 
@@ -128,5 +139,19 @@ describe('CreateEmployeeUseCase', () => {
     await expect(execute).rejects.toThrow(
       'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
     );
+  });
+
+  it('should call encrypter with correct values', async () => {
+    const { sut, encrypterStub } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'manager' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const encrypterSpy = jest.spyOn(encrypterStub, 'hash');
+    await sut.execute(params);
+    expect(encrypterSpy).toHaveBeenCalledWith('P@ssword123');
   });
 });
