@@ -64,6 +64,66 @@ describe('Employee Entity', () => {
       const email = '.john.doe@example.com';
       const employeeOrError = sut.create({ ...employeeProps, email });
       expect(employeeOrError).toBeInstanceOf(InvalidEmailFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid email format: email must not start with a dot (.)',
+      );
+    });
+
+    it('should return error if email is without @ sign', () => {
+      const { sut, employeeProps } = makeSut();
+      const email = 'john.doeexample.com';
+      const employeeOrError = sut.create({ ...employeeProps, email });
+      expect(employeeOrError).toBeInstanceOf(InvalidEmailFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid email format: email must contain an "@" symbol',
+      );
+    });
+
+    it('should return error if email has more than 256 characters', () => {
+      const { sut, employeeProps } = makeSut();
+      const email = 'a'.repeat(247) + '@example.com';
+      const employeeOrError = sut.create({ ...employeeProps, email });
+      expect(employeeOrError).toBeInstanceOf(InvalidEmailFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid email format: email must not exceed 256 characters',
+      );
+    });
+
+    it('should return error if the account part (before @) is longer than 64 characters', () => {
+      const { sut, employeeProps } = makeSut();
+      const email = 'a'.repeat(65) + '@example.com';
+      const employeeOrError = sut.create({ ...employeeProps, email });
+      expect(employeeOrError).toBeInstanceOf(InvalidEmailFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid email format: account part must not exceed 64 characters',
+      );
+    });
+
+    it('should return error if any domain part (between dots) is longer than 63 characters', () => {
+      const { sut, employeeProps } = makeSut();
+      const email = 'john.doe@' + 'a'.repeat(64) + '.com';
+      const employeeOrError = sut.create({ ...employeeProps, email });
+      expect(employeeOrError).toBeInstanceOf(InvalidEmailFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid email format: domain part must not exceed 63 characters',
+      );
+    });
+
+    it('should return error if email contains invalid characters', () => {
+      const { sut, employeeProps } = makeSut();
+      const email = 'a@b.c';
+      const employeeOrError = sut.create({ ...employeeProps, email });
+      expect(employeeOrError).toBeInstanceOf(InvalidEmailFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid email format: email contains invalid characters',
+      );
+    });
+
+    it('should create an employee if email is valid', () => {
+      const { sut, employeeProps } = makeSut();
+      const email = 'john.doe@example.com';
+      const employeeOrError = sut.create({ ...employeeProps, email });
+      expect(employeeOrError).toBeInstanceOf(Employee);
     });
   });
 });
