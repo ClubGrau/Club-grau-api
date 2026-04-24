@@ -310,5 +310,18 @@ describe('Employee Entity', () => {
       expect(employeeOrError).toBeInstanceOf(Employee);
       expect((employeeOrError as Employee).props.deactivateAt).toBeNull();
     });
+
+    it('should create an employee with deactivateAt set to provided date', () => {
+      const { sut, employeeProps } = makeSut();
+      const deactivateAt = new Date('2024-02-01T00:00:00Z');
+      const employeeOrError = sut.create({
+        ...employeeProps,
+        deactivateAt,
+      });
+      expect(employeeOrError).toBeInstanceOf(Employee);
+      expect((employeeOrError as Employee).props.deactivateAt).toBe(
+        deactivateAt,
+      );
+    });
   });
 });
