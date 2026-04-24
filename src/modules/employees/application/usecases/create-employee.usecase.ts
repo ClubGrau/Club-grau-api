@@ -4,18 +4,21 @@ import { CheckEmployeeExistenceService } from '../../domain/services/check-emplo
 import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
 import { Employee } from '../../domain/entity/Employee';
 import type { EncrypterPort } from '../../infra/cryptograph/ports/encrypter.port';
+import type { CreateEmployeeRepositoryPort } from '../ports/create-employee.repository.port';
 
 @Injectable()
 export class CreateEmployeeUseCase {
   constructor(
     @Inject('ENCRYPTER_PORT')
     private readonly encrypter: EncrypterPort,
+    @Inject('CREATE_EMPLOYEE_REPOSITORY_PORT')
+    private readonly createEmployeeRepository: CreateEmployeeRepositoryPort,
     private readonly checkEmployeeExistence: CheckEmployeeExistenceService,
   ) {}
 
   async execute(
-    params: EmployeeModel.CreateEmployeeRequestDto,
-  ): Promise<EmployeeModel.CreateEmployeeResponseDto> {
+    params: EmployeeModel.CreateRequestDto,
+  ): Promise<EmployeeModel.CreateResponseDto> {
     const { password, passwordConfirmation } = params;
     if (password !== passwordConfirmation) {
       throw new PasswordNotMatchError();
@@ -41,7 +44,14 @@ export class CreateEmployeeUseCase {
     }
 
     const planPasswordValue = employeeOrError.props.password.getValue();
-    await this.encrypter.hash(planPasswordValue);
+    const hashedPassword = await this.encrypter.hash(planPasswordValue);
+
+    const employee = {
+      ...employeeOrError.toJSON(),
+      password: hashedPassword,
+    };
+
+    await this.createEmployeeRepository.create(employee);
 
     return Promise.resolve({
       id: 'valid_id',
