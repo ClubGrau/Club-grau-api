@@ -1,5 +1,9 @@
 export namespace EmployeeModel {
-  export type Role = 'admin' | 'employee' | 'manager';
+  export enum Role {
+    Admin = 'admin',
+    Employee = 'employee',
+    Manager = 'manager',
+  }
 
   export interface CreateEmployeeRequestDto {
     name: string;
