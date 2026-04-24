@@ -1,5 +1,5 @@
 import { InvalidPasswordFormatError } from '../../errors/invalid-password-format.error';
-import { Password } from './password.vo';
+import Password from './password.vo';
 
 const makeSut = () => {
   const sut = Password;
