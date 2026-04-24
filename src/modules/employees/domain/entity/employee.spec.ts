@@ -302,4 +302,13 @@ describe('Employee Entity', () => {
       );
     });
   });
+
+  describe('deactivateAt', () => {
+    it('should create an employee with deactivateAt set to null by default', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create(employeeProps);
+      expect(employeeOrError).toBeInstanceOf(Employee);
+      expect((employeeOrError as Employee).props.deactivateAt).toBeNull();
+    });
+  });
 });
