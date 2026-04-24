@@ -1,4 +1,5 @@
 import { InvalidEmailFormatError } from '../../../shared/domain/errors/invalid-email-format.error';
+import { InvalidNifFormatError } from '../../../shared/domain/errors/invalid-nif-format.error';
 import { InvalidPasswordFormatError } from '../../../shared/domain/errors/invalid-password-format.error';
 import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
@@ -9,6 +10,7 @@ const makeSut = () => {
     name: 'John Doe',
     email: 'john.doe@example.com',
     password: 'P@ssword',
+    nif: 123456789,
   };
   const sut = Employee;
 
@@ -174,6 +176,45 @@ describe('Employee Entity', () => {
       expect(employeeOrError).toBeInstanceOf(InvalidPasswordFormatError);
       expect((employeeOrError as Error).message).toBe(
         'Invalid param format: password must have at least one special character',
+      );
+    });
+  });
+
+  describe('Employee nif validation', () => {
+    it('should create an employee if nif is valid', () => {
+      const { sut, employeeProps } = makeSut();
+      const nif = 123456789;
+      const employeeOrError = sut.create({ ...employeeProps, nif });
+      expect(employeeOrError).toBeInstanceOf(Employee);
+    });
+
+    it('should return error if nif is shorter than 9 digits', () => {
+      const { sut, employeeProps } = makeSut();
+      const nif = 12345678;
+      const employeeOrError = sut.create({ ...employeeProps, nif });
+      expect(employeeOrError).toBeInstanceOf(InvalidNifFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid param format: nif must be a 9-digit number',
+      );
+    });
+
+    it('should return error if nif is greater than 9 digits', () => {
+      const { sut, employeeProps } = makeSut();
+      const nif = 1234567890;
+      const employeeOrError = sut.create({ ...employeeProps, nif });
+      expect(employeeOrError).toBeInstanceOf(InvalidNifFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid param format: nif must be a 9-digit number',
+      );
+    });
+
+    it('should return error if nif is not numeric', () => {
+      const { sut, employeeProps } = makeSut();
+      const nif = 'nif' as unknown as number;
+      const employeeOrError = sut.create({ ...employeeProps, nif });
+      expect(employeeOrError).toBeInstanceOf(InvalidNifFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid param format: nif must be a 9-digit number',
       );
     });
   });
