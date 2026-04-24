@@ -154,4 +154,19 @@ describe('CreateEmployeeUseCase', () => {
     await sut.execute(params);
     expect(encrypterSpy).toHaveBeenCalledWith('P@ssword123');
   });
+
+  it('should throw if encrypter throws', async () => {
+    const { sut, encrypterStub } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    jest
+      .spyOn(encrypterStub, 'hash')
+      .mockRejectedValueOnce(new Error('Encryption error'));
+    await expect(sut.execute(params)).rejects.toThrow('Encryption error');
+  });
 });
