@@ -21,11 +21,11 @@ export class Entity<Props> {
     return this.uniqueEntityId.getValue();
   }
 
-  toJSON(): Required<{ id: string } & Props> {
+  toJSON(): Required<{ id: string } & VOProps<Props>> {
     return {
       id: this.id,
       ...this.unwrapValueObjectProps(this.props),
-    } as Required<{ id: string } & Props>;
+    } as Required<{ id: string } & VOProps<Props>>;
   }
 
   private unwrapValueObjectProps(props: Props): VOProps<Props> {
