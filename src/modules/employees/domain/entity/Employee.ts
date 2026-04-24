@@ -51,7 +51,10 @@ export class Employee extends Entity<EmployeeProps> {
       return nifOrError;
     }
 
-    if (!input.role) {
+    if (
+      !input.role ||
+      !Object.values(EmployeeModel.Role).includes(input.role)
+    ) {
       return new InvalidParamError('role');
     }
 
@@ -69,7 +72,7 @@ const employee1 = Employee.create({
   name: 'John Doe',
   email: 'john.doe@example.com',
   password: 'P@ssword',
-  role: 'admin',
+  role: EmployeeModel.Role.Admin,
 });
 
 if (employee1 instanceof Employee) {
