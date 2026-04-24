@@ -324,4 +324,26 @@ describe('Employee Entity', () => {
       );
     });
   });
+
+  describe('toJSON', () => {
+    it('should convert an employee to JSON', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create(employeeProps);
+      const employee = employeeOrError as Employee;
+      const json = employee.toJSON();
+
+      expect(employeeOrError).toBeInstanceOf(Employee);
+      expect(json).toEqual({
+        id: employee.id,
+        name: employee.props.name.getValue(),
+        email: employee.props.email.getValue(),
+        password: employee.props.password.getValue(),
+        role: employee.props.role,
+        nif: employee.props.nif ? employee.props.nif.getValue() : null,
+        isActive: employee.props.isActive,
+        createdAt: employee.props.createdAt,
+        deactivateAt: employee.props.deactivateAt,
+      });
+    });
+  });
 });
