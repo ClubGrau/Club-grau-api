@@ -4,6 +4,7 @@ import { InvalidPasswordFormatError } from '../../../shared/domain/errors/invali
 import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 import { InvalidParamError } from '../errors/invalid-param.error';
+import { EmployeeModel } from '../models/employee';
 import { Employee, EmployeeCreateInput } from './Employee';
 
 const makeSut = () => {
@@ -12,7 +13,7 @@ const makeSut = () => {
     email: 'john.doe@example.com',
     password: 'P@ssword',
     nif: 123456789,
-    role: 'admin',
+    role: EmployeeModel.Role.Employee,
   };
   const sut = Employee;
 
@@ -228,6 +229,16 @@ describe('Employee Entity', () => {
         ...employeeProps,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         role: undefined as any,
+      });
+      expect(employeeOrError).toBeInstanceOf(InvalidParamError);
+      expect((employeeOrError as Error).message).toBe('Invalid param: role');
+    });
+
+    it('should throw an error if role is invalid', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create({
+        ...employeeProps,
+        role: 'invalid_role' as EmployeeModel.Role,
       });
       expect(employeeOrError).toBeInstanceOf(InvalidParamError);
       expect((employeeOrError as Error).message).toBe('Invalid param: role');
