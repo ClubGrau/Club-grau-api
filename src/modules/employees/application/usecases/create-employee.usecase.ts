@@ -51,10 +51,8 @@ export class CreateEmployeeUseCase {
       password: hashedPassword,
     };
 
-    await this.createEmployeeRepository.create(employee);
+    const { id } = await this.createEmployeeRepository.create(employee);
 
-    return Promise.resolve({
-      id: 'valid_id',
-    });
+    return { id };
   }
 }
