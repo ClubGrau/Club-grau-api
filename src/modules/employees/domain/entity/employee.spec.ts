@@ -7,6 +7,7 @@ const makeSut = () => {
   const employeeProps: EmployeeCreateInput = {
     name: 'John Doe',
     email: 'john.doe@example.com',
+    password: 'P@ssword',
   };
   const sut = Employee;
 
@@ -123,6 +124,15 @@ describe('Employee Entity', () => {
       const { sut, employeeProps } = makeSut();
       const email = 'john.doe@example.com';
       const employeeOrError = sut.create({ ...employeeProps, email });
+      expect(employeeOrError).toBeInstanceOf(Employee);
+    });
+  });
+
+  describe('Employee password validation', () => {
+    it('should create an employee if password is valid', () => {
+      const { sut, employeeProps } = makeSut();
+      const password = 'P@ssword';
+      const employeeOrError = sut.create({ ...employeeProps, password });
       expect(employeeOrError).toBeInstanceOf(Employee);
     });
   });
