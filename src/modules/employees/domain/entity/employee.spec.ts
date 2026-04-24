@@ -15,6 +15,7 @@ const makeSut = () => {
     nif: 123456789,
     role: EmployeeModel.Role.Employee,
     isActive: true,
+    createdAt: new Date('2024-01-01T00:00:00Z'),
   };
   const sut = Employee;
 
@@ -258,6 +259,47 @@ describe('Employee Entity', () => {
       const employeeOrError = sut.create(employeeProps);
       expect(employeeOrError).toBeInstanceOf(Employee);
       expect((employeeOrError as Employee).props.isActive).toBe(true);
+    });
+  });
+
+  describe('createdAt', () => {
+    const date = new Date('2024-01-01T00:00:00Z');
+
+    it('should create an employee with createdAt set to provided date', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create({
+        ...employeeProps,
+        createdAt: date,
+      });
+      expect(employeeOrError).toBeInstanceOf(Employee);
+      expect((employeeOrError as Employee).props.createdAt).toBe(date);
+    });
+
+    it('should be a valid instance of Date', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create(employeeProps);
+      expect(employeeOrError).toBeInstanceOf(Employee);
+      expect((employeeOrError as Employee).props.createdAt).toBeInstanceOf(
+        Date,
+      );
+    });
+
+    it('should create an employee with createdAt set to current date', () => {
+      const { sut, employeeProps } = makeSut();
+      const beforeCreation = new Date();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { createdAt, ...propsWithoutCreatedAt } = employeeProps;
+      const employeeOrError = sut.create(propsWithoutCreatedAt);
+      const afterCreation = new Date();
+
+      expect(employeeOrError).toBeInstanceOf(Employee);
+      const createdAtResult = (employeeOrError as Employee).props.createdAt;
+      expect(createdAtResult?.getTime()).toBeGreaterThanOrEqual(
+        beforeCreation.getTime(),
+      );
+      expect(createdAtResult?.getTime()).toBeLessThanOrEqual(
+        afterCreation.getTime(),
+      );
     });
   });
 });
