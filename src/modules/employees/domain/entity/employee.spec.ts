@@ -14,6 +14,7 @@ const makeSut = () => {
     password: 'P@ssword',
     nif: 123456789,
     role: EmployeeModel.Role.Employee,
+    isActive: true,
   };
   const sut = Employee;
 
@@ -248,6 +249,15 @@ describe('Employee Entity', () => {
       });
       expect(employeeOrError).toBeInstanceOf(InvalidParamError);
       expect((employeeOrError as Error).message).toBe('Invalid param: role');
+    });
+  });
+
+  describe('Employee isActive default value', () => {
+    it('should create an employee with isActive set to true by default', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create(employeeProps);
+      expect(employeeOrError).toBeInstanceOf(Employee);
+      expect((employeeOrError as Employee).props.isActive).toBe(true);
     });
   });
 });
