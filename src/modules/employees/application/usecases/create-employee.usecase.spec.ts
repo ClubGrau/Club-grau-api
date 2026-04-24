@@ -1,27 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateEmployeeUseCase } from './create-employee.usecase';
 import { EmployeeModel } from '../../domain/models/employee';
-import { FindActiveEmployeeByEmail } from '../ports/find-active-employee-by-email.port';
 import { CheckEmployeeExistenceService } from '../../domain/services/check-employee-existence.service';
 import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
+import { ExistEmployeeError } from '../../domain/errors/exist-employee.error';
+import { InactiveEmployeeError } from '../../domain/errors/inactive-employee.error';
 
-const makeStubs = () => ({
-  findActiveEmployeeByEmailStub: {
-    isExist: jest.fn().mockResolvedValue(null) as jest.MockedFunction<
-      FindActiveEmployeeByEmail['isExist']
-    >,
-  } satisfies FindActiveEmployeeByEmail,
+const makeSub = () => ({
+  checkEmployeeExistenceService: {
+    check: jest.fn() as jest.Mock<Promise<Error | null>, [string]>,
+  },
 });
 
 const makeSut = async () => {
-  const { findActiveEmployeeByEmailStub } = makeStubs();
+  const { checkEmployeeExistenceService } = makeSub();
+
   const testModule: TestingModule = await Test.createTestingModule({
     providers: [
       CreateEmployeeUseCase,
-      CheckEmployeeExistenceService,
       {
-        provide: 'FIND_ACTIVE_EMPLOYEE_BY_EMAIL',
-        useValue: findActiveEmployeeByEmailStub,
+        provide: CheckEmployeeExistenceService,
+        useValue: checkEmployeeExistenceService,
       },
     ],
   }).compile();
@@ -30,7 +29,7 @@ const makeSut = async () => {
 
   return {
     sut,
-    findActiveEmployeeByEmailStub,
+    checkEmployeeExistenceService,
   };
 };
 
@@ -65,7 +64,7 @@ describe('CreateEmployeeUseCase', () => {
   });
 
   it('should return an error if employee already exists and is active', async () => {
-    const { sut, findActiveEmployeeByEmailStub } = await makeSut();
+    const { sut, checkEmployeeExistenceService } = await makeSut();
     const params = {
       name: 'John Doe',
       email: 'john.doe@example.com',
@@ -73,17 +72,15 @@ describe('CreateEmployeeUseCase', () => {
       password: 'P@ssword123',
       passwordConfirmation: 'P@ssword123',
     };
-    jest.spyOn(findActiveEmployeeByEmailStub, 'isExist').mockResolvedValueOnce({
-      id: 'existing_employee_id',
-      email: 'john.doe@example.com',
-      isActive: true,
-    });
+    jest
+      .spyOn(checkEmployeeExistenceService, 'check')
+      .mockResolvedValueOnce(new ExistEmployeeError());
     const execute = sut.execute(params);
     await expect(execute).rejects.toThrow('Employee already exists');
   });
 
   it('should return an error if existent employee is inactive', async () => {
-    const { sut, findActiveEmployeeByEmailStub } = await makeSut();
+    const { sut, checkEmployeeExistenceService } = await makeSut();
     const params = {
       name: 'John Doe',
       email: 'john.doe@example.com',
@@ -91,12 +88,26 @@ describe('CreateEmployeeUseCase', () => {
       password: 'P@ssword123',
       passwordConfirmation: 'P@ssword123',
     };
-    jest.spyOn(findActiveEmployeeByEmailStub, 'isExist').mockResolvedValueOnce({
-      id: 'existing_employee_id',
-      email: 'john.doe@example.com',
-      isActive: false,
-    });
+    jest
+      .spyOn(checkEmployeeExistenceService, 'check')
+      .mockResolvedValueOnce(new InactiveEmployeeError());
     const execute = sut.execute(params);
     await expect(execute).rejects.toThrow('Existent employee is inactive');
+  });
+
+  it('should return null if employee does not exist', async () => {
+    const { sut, checkEmployeeExistenceService } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'manager' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    jest
+      .spyOn(checkEmployeeExistenceService, 'check')
+      .mockResolvedValueOnce(null);
+    const execute = sut.execute(params);
+    await expect(execute).resolves.toEqual({ id: 'valid_id' });
   });
 });
