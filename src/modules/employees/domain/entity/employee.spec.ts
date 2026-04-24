@@ -1,4 +1,5 @@
 import { InvalidEmailFormatError } from '../../../shared/domain/errors/invalid-email-format.error';
+import { InvalidPasswordFormatError } from '../../../shared/domain/errors/invalid-password-format.error';
 import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 import { Employee, EmployeeCreateInput } from './Employee';
@@ -134,6 +135,46 @@ describe('Employee Entity', () => {
       const password = 'P@ssword';
       const employeeOrError = sut.create({ ...employeeProps, password });
       expect(employeeOrError).toBeInstanceOf(Employee);
+    });
+
+    it('should return error if password is only whitespace', () => {
+      const { sut, employeeProps } = makeSut();
+      const password = '   ';
+      const employeeOrError = sut.create({ ...employeeProps, password });
+      expect(employeeOrError).toBeInstanceOf(InvalidPasswordFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid param format: password cannot be only whitespace',
+      );
+    });
+
+    it('should return error if password is shorter than 6 characters', () => {
+      const { sut, employeeProps } = makeSut();
+      const password = 'P@s';
+      const employeeOrError = sut.create({ ...employeeProps, password });
+      expect(employeeOrError).toBeInstanceOf(InvalidPasswordFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid param format: password cannot be shorter than 6 characters',
+      );
+    });
+
+    it('should return error if password does not have one uppercase letter at least', () => {
+      const { sut, employeeProps } = makeSut();
+      const password = 'p@ssword';
+      const employeeOrError = sut.create({ ...employeeProps, password });
+      expect(employeeOrError).toBeInstanceOf(InvalidPasswordFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid param format: password must have at least one uppercase letter',
+      );
+    });
+
+    it('should return error if password does not have a special character at least', () => {
+      const { sut, employeeProps } = makeSut();
+      const password = 'Password';
+      const employeeOrError = sut.create({ ...employeeProps, password });
+      expect(employeeOrError).toBeInstanceOf(InvalidPasswordFormatError);
+      expect((employeeOrError as Error).message).toBe(
+        'Invalid param format: password must have at least one special character',
+      );
     });
   });
 });
