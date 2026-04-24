@@ -23,9 +23,17 @@ export class Password extends ValueObject<string> {
       );
     }
 
-    if (!/[A-Z]/.test(password)) {
+    const uppercaseRegex = /[A-Z]/;
+    if (!uppercaseRegex.test(password)) {
       return new InvalidPasswordFormatError(
         'password must have at least one uppercase letter',
+      );
+    }
+
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (!specialCharRegex.test(password)) {
+      return new InvalidPasswordFormatError(
+        'password must have at least one special character',
       );
     }
 
