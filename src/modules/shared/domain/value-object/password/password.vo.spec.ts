@@ -47,4 +47,13 @@ describe('Password Value Object', () => {
       'Invalid param format: password must have at least one uppercase letter',
     );
   });
+
+  it('should return an error if password does not have a special character at least', () => {
+    const sut = makeSut();
+    const passwordOrError = sut.validate('Password');
+    expect(passwordOrError).toBeInstanceOf(InvalidPasswordFormatError);
+    expect((passwordOrError as Error).message).toBe(
+      'Invalid param format: password must have at least one special character',
+    );
+  });
 });
