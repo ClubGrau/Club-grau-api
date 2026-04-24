@@ -11,8 +11,8 @@ export class CreateEmployeeController {
 
   @Post()
   async handle(
-    @Body() request: EmployeeModel.CreateEmployeeRequestDto,
-  ): Promise<EmployeeModel.CreateEmployeeResponseDto> {
+    @Body() request: EmployeeModel.CreateRequestDto,
+  ): Promise<EmployeeModel.CreateResponseDto> {
     try {
       const requiredFields = [
         'name',

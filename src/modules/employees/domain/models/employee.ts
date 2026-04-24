@@ -5,7 +5,7 @@ export namespace EmployeeModel {
     Manager = 'manager',
   }
 
-  export interface CreateEmployeeRequestDto {
+  export interface CreateRequestDto {
     name: string;
     email: string;
     role: Role;
@@ -25,16 +25,16 @@ export namespace EmployeeModel {
     deactivateAt?: Date | null;
   }
 
-  export interface CreatedEmployeeOutput {
+  export interface CreateData {
     id: string;
     name: string;
     email: string;
-    role: EmployeeModel.Role;
     password: string;
+    nif: number | null;
+    role: EmployeeModel.Role;
     isActive: boolean;
-    nif: number;
-    createdAt: string;
-    deactivatedAt: string | null;
+    createdAt: Date;
+    deactivateAt: Date | null;
   }
 
   export interface Status {
@@ -43,7 +43,7 @@ export namespace EmployeeModel {
     isActive: boolean;
   }
 
-  export interface CreateEmployeeResponseDto {
+  export interface CreateResponseDto {
     id: string;
   }
 }
