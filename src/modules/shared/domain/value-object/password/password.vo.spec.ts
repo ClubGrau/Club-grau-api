@@ -56,4 +56,10 @@ describe('Password Value Object', () => {
       'Invalid param format: password must have at least one special character',
     );
   });
+
+  it('should return null if password is valid', () => {
+    const sut = makeSut();
+    const passwordOrError = sut.validate('P@ssword');
+    expect(passwordOrError).toBeNull();
+  });
 });
