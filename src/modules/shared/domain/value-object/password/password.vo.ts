@@ -1,7 +1,7 @@
 import { InvalidPasswordFormatError } from '../../errors/invalid-password-format.error';
 import { ValueObject } from '../value-object';
 
-export class Password extends ValueObject<string> {
+export default class Password extends ValueObject<string> {
   constructor(value: string) {
     super(value);
   }

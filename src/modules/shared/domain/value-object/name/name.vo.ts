@@ -2,7 +2,7 @@ import { InvalidParamFormatError } from '../../../../employees/domain/errors/inv
 import { InvalidParamNameLengthError } from '../../../../employees/domain/errors/invalid-param-name-length.error';
 import { ValueObject } from '../value-object';
 
-export class Name extends ValueObject<string> {
+export default class Name extends ValueObject<string> {
   private constructor(value: string) {
     super(value);
   }

@@ -1,5 +1,5 @@
 import { InvalidEmailFormatError } from '../../errors/invalid-email-format.error';
-import { Email } from './email.vo';
+import Email from './email.vo';
 
 const makeSut = (): typeof Email => {
   const sut = Email;

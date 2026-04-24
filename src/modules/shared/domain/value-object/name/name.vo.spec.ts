@@ -1,6 +1,6 @@
 import { InvalidParamFormatError } from '../../../../employees/domain/errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../../../../employees/domain/errors/invalid-param-name-length.error';
-import { Name } from './name.vo';
+import Name from './name.vo';
 
 const makeSut = (): typeof Name => {
   const sut = Name;

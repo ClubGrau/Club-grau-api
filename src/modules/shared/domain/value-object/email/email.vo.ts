@@ -1,7 +1,7 @@
 import { InvalidEmailFormatError } from '../../errors/invalid-email-format.error';
 import { ValueObject } from '../value-object';
 
-export class Email extends ValueObject<string> {
+export default class Email extends ValueObject<string> {
   private static TEST_STRING =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
