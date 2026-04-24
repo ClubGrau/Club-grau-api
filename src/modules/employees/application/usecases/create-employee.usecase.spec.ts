@@ -5,6 +5,7 @@ import { CheckEmployeeExistenceService } from '../../domain/services/check-emplo
 import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
 import { ExistEmployeeError } from '../../domain/errors/exist-employee.error';
 import { InactiveEmployeeError } from '../../domain/errors/inactive-employee.error';
+import { InvalidParamNameLengthError } from '../../domain/errors/invalid-param-name-length.error';
 
 const makeSub = () => ({
   checkEmployeeExistenceService: {
@@ -76,6 +77,7 @@ describe('CreateEmployeeUseCase', () => {
       .spyOn(checkEmployeeExistenceService, 'check')
       .mockResolvedValueOnce(new ExistEmployeeError());
     const execute = sut.execute(params);
+    await expect(execute).rejects.toBeInstanceOf(ExistEmployeeError);
     await expect(execute).rejects.toThrow('Employee already exists');
   });
 
@@ -92,6 +94,7 @@ describe('CreateEmployeeUseCase', () => {
       .spyOn(checkEmployeeExistenceService, 'check')
       .mockResolvedValueOnce(new InactiveEmployeeError());
     const execute = sut.execute(params);
+    await expect(execute).rejects.toBeInstanceOf(InactiveEmployeeError);
     await expect(execute).rejects.toThrow('Existent employee is inactive');
   });
 
@@ -109,5 +112,21 @@ describe('CreateEmployeeUseCase', () => {
       .mockResolvedValueOnce(null);
     const execute = sut.execute(params);
     await expect(execute).resolves.toEqual({ id: 'valid_id' });
+  });
+
+  it('should return a domain error if Employee.create() fails', async () => {
+    const { sut } = await makeSut();
+    const params = {
+      name: 'Jo', // inválido: Name exige entre 3 e 255 caracteres
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const execute = sut.execute(params);
+    await expect(execute).rejects.toBeInstanceOf(InvalidParamNameLengthError);
+    await expect(execute).rejects.toThrow(
+      'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
+    );
   });
 });
