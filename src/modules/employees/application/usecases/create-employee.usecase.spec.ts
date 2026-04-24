@@ -217,4 +217,19 @@ describe('CreateEmployeeUseCase', () => {
       deactivateAt: null,
     });
   });
+
+  it('should throw if createEmployeeRepository throws', async () => {
+    const { sut, createEmplyeeRepositoryStub } = await makeSut();
+    const params = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    jest
+      .spyOn(createEmplyeeRepositoryStub, 'create')
+      .mockRejectedValueOnce(new Error('Repository error'));
+    await expect(sut.execute(params)).rejects.toThrow('Repository error');
+  });
 });
