@@ -3,6 +3,7 @@ import { InvalidNifFormatError } from '../../../shared/domain/errors/invalid-nif
 import { InvalidPasswordFormatError } from '../../../shared/domain/errors/invalid-password-format.error';
 import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
+import { InvalidParamError } from '../errors/invalid-param.error';
 import { Employee, EmployeeCreateInput } from './Employee';
 
 const makeSut = () => {
@@ -11,6 +12,7 @@ const makeSut = () => {
     email: 'john.doe@example.com',
     password: 'P@ssword',
     nif: 123456789,
+    role: 'admin',
   };
   const sut = Employee;
 
@@ -216,6 +218,19 @@ describe('Employee Entity', () => {
       expect((employeeOrError as Error).message).toBe(
         'Invalid param format: nif must be a 9-digit number',
       );
+    });
+  });
+
+  describe('EMployee role', () => {
+    it('should throw an error if role is not provided', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create({
+        ...employeeProps,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        role: undefined as any,
+      });
+      expect(employeeOrError).toBeInstanceOf(InvalidParamError);
+      expect((employeeOrError as Error).message).toBe('Invalid param: role');
     });
   });
 });
