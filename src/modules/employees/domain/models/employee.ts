@@ -19,6 +19,7 @@ export namespace EmployeeModel {
     password: string;
     nif?: number | null;
     role: EmployeeModel.Role;
+    isActive?: boolean;
   }
 
   export interface CreatedEmployeeOutput {
