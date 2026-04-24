@@ -1,3 +1,4 @@
+import { InvalidParamFormatError } from '../../../../employees/domain/errors/invalid-param-format.error';
 import { Password } from './password.vo';
 
 const makeSut = () => {
@@ -18,5 +19,14 @@ describe('Password Value Object', () => {
       throw passwordOrError;
     }
     expect(passwordOrError.getValue()).toBe('P@ssword');
+  });
+
+  it('should return error if password is created with whitespace only', () => {
+    const sut = makeSut();
+    const passwordOrError = sut.validate('   ');
+    expect(passwordOrError).toBeInstanceOf(InvalidParamFormatError);
+    expect((passwordOrError as Error).message).toBe(
+      'Invalid param format: password cannot be only whitespace',
+    );
   });
 });
