@@ -62,4 +62,31 @@ describe('Password Value Object', () => {
     const passwordOrError = sut.validate('P@ssword');
     expect(passwordOrError).toBeNull();
   });
+
+  it('should call validate method when creating a Password instance', () => {
+    const sut = makeSut();
+    const validateSpy = jest.spyOn(sut, 'validate');
+    sut.create('P@ssword');
+    expect(validateSpy).toHaveBeenCalledWith('P@ssword');
+    expect(validateSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return an instanceof InvalidPasswordFormatError if password is invalid when creating a Password instance', () => {
+    const sut = makeSut();
+    const passwordOrError = sut.create('   ');
+    expect(passwordOrError).toBeInstanceOf(InvalidPasswordFormatError);
+    expect((passwordOrError as Error).message).toBe(
+      'Invalid param format: password cannot be only whitespace',
+    );
+  });
+
+  it('should create a Password instance if valid password is provided', () => {
+    const sut = makeSut();
+    const passwordOrError = sut.create('P@ssword');
+    expect(passwordOrError).toBeInstanceOf(Password);
+    expect(typeof passwordOrError).toBe('object');
+    if (passwordOrError instanceof Password) {
+      expect(passwordOrError.getValue()).toBe('P@ssword');
+    }
+  });
 });
