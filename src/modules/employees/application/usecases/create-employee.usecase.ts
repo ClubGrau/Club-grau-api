@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EmployeeModel } from '../../domain/models/employee';
 import { CheckEmployeeExistenceService } from '../../domain/services/check-employee-existence.service';
 import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
 import { Employee } from '../../domain/entity/Employee';
+import type { EncrypterPort } from '../../infra/cryptograph/ports/encrypter.port';
 
 @Injectable()
 export class CreateEmployeeUseCase {
   constructor(
+    @Inject('ENCRYPTER_PORT')
+    private readonly encrypter: EncrypterPort,
     private readonly checkEmployeeExistence: CheckEmployeeExistenceService,
   ) {}
 
@@ -36,6 +39,9 @@ export class CreateEmployeeUseCase {
     if (employeeOrError instanceof Error) {
       throw employeeOrError;
     }
+
+    const planPasswordValue = employeeOrError.props.password.getValue();
+    await this.encrypter.hash(planPasswordValue);
 
     return Promise.resolve({
       id: 'valid_id',
