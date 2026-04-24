@@ -14,7 +14,8 @@ interface EmployeeProps {
   password: Password;
   nif?: Nif | null;
   role: EmployeeModel.Role;
-  isActive: boolean;
+  isActive?: boolean;
+  createdAt?: Date;
 }
 
 export class Employee extends Entity<EmployeeProps> {
@@ -46,6 +47,7 @@ export class Employee extends Entity<EmployeeProps> {
 
     const optionalProps = {
       isActive: input.isActive ?? true,
+      createdAt: input.createdAt ?? new Date(),
     };
 
     return new Employee({

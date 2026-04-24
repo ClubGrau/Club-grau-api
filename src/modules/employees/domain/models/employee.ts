@@ -20,6 +20,7 @@ export namespace EmployeeModel {
     nif?: number | null;
     role: EmployeeModel.Role;
     isActive?: boolean;
+    createdAt?: Date;
   }
 
   export interface CreatedEmployeeOutput {
