@@ -22,6 +22,13 @@ export class Password extends ValueObject<string> {
         'password cannot be shorter than 6 characters',
       );
     }
+
+    if (!/[A-Z]/.test(password)) {
+      return new InvalidPasswordFormatError(
+        'password must have at least one uppercase letter',
+      );
+    }
+
     return null;
   }
 }
