@@ -6,11 +6,15 @@ export class Password extends ValueObject<string> {
     super(value);
   }
 
-  static create(password: string): Password | Error {
+  static create(password: string): Password | InvalidPasswordFormatError {
+    const error = Password.validate(password);
+    if (error) {
+      return error;
+    }
     return new Password(password);
   }
 
-  static validate(password: string): Error | null {
+  static validate(password: string): InvalidPasswordFormatError | null {
     if (password.trim() === '') {
       return new InvalidPasswordFormatError(
         'password cannot be only whitespace',
