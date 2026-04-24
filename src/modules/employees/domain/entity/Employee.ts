@@ -14,6 +14,7 @@ interface EmployeeProps {
   password: Password;
   nif?: Nif | null;
   role: EmployeeModel.Role;
+  isActive: boolean;
 }
 
 export class Employee extends Entity<EmployeeProps> {
@@ -43,12 +44,17 @@ export class Employee extends Entity<EmployeeProps> {
     if (result instanceof Error) return result;
     const [name, email, password, nif] = result;
 
+    const optionalProps = {
+      isActive: input.isActive ?? true,
+    };
+
     return new Employee({
       name,
       email,
       password,
       nif,
       role: input.role,
+      ...optionalProps,
     });
   }
 }
