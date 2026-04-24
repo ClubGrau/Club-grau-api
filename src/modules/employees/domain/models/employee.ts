@@ -13,6 +13,14 @@ export namespace EmployeeModel {
     passwordConfirmation: string;
   }
 
+  export interface EntityCreateInput {
+    name: string;
+    email: string;
+    password: string;
+    nif?: number | null;
+    role: EmployeeModel.Role;
+  }
+
   export interface CreatedEmployeeOutput {
     id: string;
     name: string;

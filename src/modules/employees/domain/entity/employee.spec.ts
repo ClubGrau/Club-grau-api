@@ -5,10 +5,10 @@ import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
 import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 import { InvalidParamError } from '../errors/invalid-param.error';
 import { EmployeeModel } from '../models/employee';
-import { Employee, EmployeeCreateInput } from './Employee';
+import { Employee } from './Employee';
 
 const makeSut = () => {
-  const employeeProps: EmployeeCreateInput = {
+  const employeeProps: EmployeeModel.EntityCreateInput = {
     name: 'John Doe',
     email: 'john.doe@example.com',
     password: 'P@ssword',
@@ -219,6 +219,12 @@ describe('Employee Entity', () => {
       expect((employeeOrError as Error).message).toBe(
         'Invalid param format: nif must be a 9-digit number',
       );
+    });
+
+    it('should allow Employee creation if nif is null', () => {
+      const { sut, employeeProps } = makeSut();
+      const employeeOrError = sut.create({ ...employeeProps, nif: null });
+      expect(employeeOrError).toBeInstanceOf(Employee);
     });
   });
 
