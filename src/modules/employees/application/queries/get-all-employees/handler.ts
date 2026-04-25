@@ -2,6 +2,7 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetAllEmployeesQuery } from './query';
 import type { GetAllEmployeesRepositoryPort } from '../../ports/get-all-employees.repository.port';
+import { GetAllEmployeesResult } from './result';
 
 @QueryHandler(GetAllEmployeesQuery)
 export class GetAllEmployeesHandler implements IQueryHandler<GetAllEmployeesQuery> {
@@ -10,12 +11,12 @@ export class GetAllEmployeesHandler implements IQueryHandler<GetAllEmployeesQuer
     private readonly getAllEmployeesRepository: GetAllEmployeesRepositoryPort,
   ) {}
 
-  async execute(query: GetAllEmployeesQuery): Promise<any> {
+  async execute(query: GetAllEmployeesQuery): Promise<GetAllEmployeesResult> {
     const { page = 1, limit = 10 } = query;
-    await this.getAllEmployeesRepository.getAll({
+    const { employees, total } = await this.getAllEmployeesRepository.getAll({
       page,
       limit,
     });
-    return Promise.resolve(null);
+    return new GetAllEmployeesResult(employees, total);
   }
 }
