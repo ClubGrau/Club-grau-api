@@ -134,4 +134,15 @@ describe('GetAllEmployeesHandler', () => {
       total,
     });
   });
+
+  it('should propagate repository errors', async () => {
+    const { sut, getAllEmployeesStub } = await makeSut();
+    jest
+      .spyOn(getAllEmployeesStub, 'getAll')
+      .mockRejectedValueOnce(new Error('DB error'));
+
+    const response = sut.execute(new GetAllEmployeesQuery(1, 10));
+
+    await expect(response).rejects.toThrow('DB error');
+  });
 });
