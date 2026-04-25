@@ -104,5 +104,46 @@ describe('EmployeeMongoRepository', () => {
       expect(typeof sut.create).toBe('function');
       expect(sut).toHaveProperty('create');
     });
+
+    it('should create a new employee with a valid Mongoose query', async () => {
+      const { sut, employeeModelMock } = await makeSut();
+      const employeeData = {
+        id: new mongoose.Types.ObjectId().toHexString(),
+        name: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        role: 'manager' as EmployeeModel.Role,
+        password: 'hashed_password',
+        nif: 987654321,
+        isActive: true,
+        createdAt: new Date('2024-01-01T00:00:00Z'),
+        deactivateAt: null,
+      };
+      const createSpy = jest
+        .spyOn(employeeModelMock, 'create')
+        .mockResolvedValueOnce({
+          _id: employeeData.id,
+          name: 'Jane Doe',
+          email: 'jane.doe@example.com',
+          role: 'manager',
+          password: 'hashed_password',
+          nif: 987654321,
+          isActive: true,
+          createdAt: new Date('2024-01-01T00:00:00Z'),
+          deactivateAt: null,
+        });
+      const result = await sut.create(employeeData);
+      expect(createSpy).toHaveBeenCalledWith({
+        _id: employeeData.id,
+        name: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        role: 'manager',
+        password: 'hashed_password',
+        nif: 987654321,
+        isActive: true,
+        createdAt: new Date('2024-01-01T00:00:00Z'),
+        deactivateAt: null,
+      });
+      expect(result).toEqual({ id: employeeData.id });
+    });
   });
 });
