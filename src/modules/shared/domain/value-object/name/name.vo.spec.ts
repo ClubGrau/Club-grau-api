@@ -1,5 +1,4 @@
-import { InvalidParamFormatError } from '../../../../employees/domain/errors/invalid-param-format.error';
-import { InvalidParamNameLengthError } from '../../../../employees/domain/errors/invalid-param-name-length.error';
+import { InvalidNameFormatError } from '../../errors/invalid-name-format.error';
 import Name from './name.vo';
 
 const makeSut = (): typeof Name => {
@@ -25,7 +24,7 @@ describe('Name Value Object', () => {
   it('should return error if name is created with whitespace only', () => {
     const sut = makeSut();
     const nameOrError = sut.validate('   ');
-    expect(nameOrError).toBeInstanceOf(InvalidParamFormatError);
+    expect(nameOrError).toBeInstanceOf(InvalidNameFormatError);
     expect((nameOrError as Error).message).toBe(
       'Invalid param format: name cannot be only whitespace',
     );
@@ -34,7 +33,7 @@ describe('Name Value Object', () => {
   it('should return error if name is created with length shorter than 3 characters', () => {
     const sut = makeSut();
     const nameOrError = sut.create('Jo');
-    expect(nameOrError).toBeInstanceOf(InvalidParamNameLengthError);
+    expect(nameOrError).toBeInstanceOf(InvalidNameFormatError);
     expect((nameOrError as Error).message).toBe(
       'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
     );
@@ -44,7 +43,7 @@ describe('Name Value Object', () => {
     const sut = makeSut();
     const longName = 'J'.repeat(256);
     const nameOrError = sut.create(longName);
-    expect(nameOrError).toBeInstanceOf(InvalidParamNameLengthError);
+    expect(nameOrError).toBeInstanceOf(InvalidNameFormatError);
     expect((nameOrError as Error).message).toBe(
       'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
     );

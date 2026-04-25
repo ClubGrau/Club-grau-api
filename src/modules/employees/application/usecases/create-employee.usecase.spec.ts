@@ -5,9 +5,9 @@ import { CheckEmployeeExistenceService } from '../../domain/services/check-emplo
 import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
 import { ExistEmployeeError } from '../../domain/errors/exist-employee.error';
 import { InactiveEmployeeError } from '../../domain/errors/inactive-employee.error';
-import { InvalidParamNameLengthError } from '../../domain/errors/invalid-param-name-length.error';
 import { EncrypterPort } from '../../../shared/infra/cryptograph/ports/encrypter.port';
 import { CreateEmployeeRepositoryPort } from '../ports/create-employee.repository.port';
+import { InvalidNameFormatError } from '../../../shared/domain/errors/invalid-name-format.error';
 
 const makeSub = () => ({
   checkEmployeeExistenceService: {
@@ -155,7 +155,7 @@ describe('CreateEmployeeUseCase', () => {
       passwordConfirmation: 'P@ssword123',
     };
     const execute = sut.execute(params);
-    await expect(execute).rejects.toBeInstanceOf(InvalidParamNameLengthError);
+    await expect(execute).rejects.toBeInstanceOf(InvalidNameFormatError);
     await expect(execute).rejects.toThrow(
       'Invalid param format: name cannot be shorter than 3 characters or longer than 255 characters',
     );

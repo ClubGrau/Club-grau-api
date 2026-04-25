@@ -1,8 +1,7 @@
 import { InvalidEmailFormatError } from '../../../shared/domain/errors/invalid-email-format.error';
+import { InvalidNameFormatError } from '../../../shared/domain/errors/invalid-name-format.error';
 import { InvalidNifFormatError } from '../../../shared/domain/errors/invalid-nif-format.error';
 import { InvalidPasswordFormatError } from '../../../shared/domain/errors/invalid-password-format.error';
-import { InvalidParamFormatError } from '../errors/invalid-param-format.error';
-import { InvalidParamNameLengthError } from '../errors/invalid-param-name-length.error';
 import { InvalidParamError } from '../errors/invalid-param.error';
 import { EmployeeModel } from '../models/employee';
 import { Employee } from './Employee';
@@ -43,20 +42,20 @@ describe('Employee Entity', () => {
     it('should return error if name is only whitespace', () => {
       const { sut, employeeProps } = makeSut();
       const employeeOrError = sut.create({ ...employeeProps, name: '   ' });
-      expect(employeeOrError).toBeInstanceOf(InvalidParamFormatError);
+      expect(employeeOrError).toBeInstanceOf(InvalidNameFormatError);
     });
 
     it('should return error if name is shorter than 3 characters', () => {
       const { sut, employeeProps } = makeSut();
       const employeeOrError = sut.create({ ...employeeProps, name: 'Jo' });
-      expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
+      expect(employeeOrError).toBeInstanceOf(InvalidNameFormatError);
     });
 
     it('should return error if name is longer than 255 characters', () => {
       const { sut, employeeProps } = makeSut();
       const longName = 'J'.repeat(256);
       const employeeOrError = sut.create({ ...employeeProps, name: longName });
-      expect(employeeOrError).toBeInstanceOf(InvalidParamNameLengthError);
+      expect(employeeOrError).toBeInstanceOf(InvalidNameFormatError);
     });
 
     it('should create an employee if name is valid', () => {
