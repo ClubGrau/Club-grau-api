@@ -80,5 +80,20 @@ describe('EmployeeMongoRepository', () => {
         isActive: true,
       });
     });
+
+    it('should return null if no employee is found', async () => {
+      const { sut, employeeModelMock } = await makeSut();
+
+      const email = 'nonexistent@example.com';
+
+      jest.spyOn(employeeModelMock, 'findOne').mockReturnValueOnce({
+        select: jest.fn().mockReturnValueOnce({
+          lean: jest.fn().mockResolvedValueOnce(null),
+        }),
+      });
+
+      const result = await sut.isExist(email);
+      expect(result).toBeNull();
+    });
   });
 });
