@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { GetAllEmployeesQuery } from './query';
 
-@Injectable()
-export class GetAllEmployeesHandler {
-  async execute(): Promise<any> {}
+@QueryHandler(GetAllEmployeesQuery)
+export class GetAllEmployeesHandler implements IQueryHandler<GetAllEmployeesQuery> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async execute(query: GetAllEmployeesQuery): Promise<any> {
+    return Promise.resolve(null);
+  }
 }
