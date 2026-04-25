@@ -5,8 +5,11 @@ export interface GetAllOptions {
   limit: number;
 }
 
+export interface GetAllEmployeesResponse {
+  employees: EmployeeModel.PrimitivesData[];
+  total: number;
+}
+
 export interface GetAllEmployeesRepositoryPort {
-  getAll(
-    options: GetAllOptions,
-  ): Promise<{ employees: EmployeeModel.PrimitivesData[]; total: number }>;
+  getAll(options: GetAllOptions): Promise<GetAllEmployeesResponse>;
 }

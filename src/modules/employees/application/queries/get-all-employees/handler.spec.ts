@@ -19,7 +19,7 @@ const makeStubs = () => ({
           createdAt: new Date('2024-06-01T00:00:00Z'),
           deactivateAt: null,
         },
-      ],
+      ] as EmployeeModel.PrimitivesData[],
       total: 1,
     }) as jest.MockedFunction<GetAllEmployeesRepositoryPort['getAll']>,
   } satisfies GetAllEmployeesRepositoryPort,
@@ -84,6 +84,20 @@ describe('GetAllEmployeesHandler', () => {
     expect(getAllEmployeesSpy).toHaveBeenCalledWith({
       page: params.page,
       limit: params.limit,
+    });
+  });
+
+  it('should apply default values for page and limit if not provided', async () => {
+    const { sut, getAllEmployeesStub } = await makeSut();
+    const getAllEmployeesSpy = jest.spyOn(getAllEmployeesStub, 'getAll');
+    const response = sut.execute(
+      new GetAllEmployeesQuery(undefined, undefined),
+    );
+
+    await expect(response).resolves.toBeDefined();
+    expect(getAllEmployeesSpy).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
     });
   });
 });
