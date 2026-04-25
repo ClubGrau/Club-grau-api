@@ -96,4 +96,13 @@ describe('EmployeeMongoRepository', () => {
       expect(result).toBeNull();
     });
   });
+
+  describe('Create new Employee', () => {
+    it('should have expected method to create', async () => {
+      const { sut } = await makeSut();
+      expect(sut.create.bind(sut)).toBeDefined();
+      expect(typeof sut.create).toBe('function');
+      expect(sut).toHaveProperty('create');
+    });
+  });
 });
