@@ -10,7 +10,7 @@ export class EmployeeMongoRepository
 {
   constructor(
     @Inject('EMPLOYEE_MODEL')
-    private readonly employeeModel: Model<EmployeeModel.PrimitiviesData>,
+    private readonly employeeModel: Model<EmployeeModel.PrimitivesData>,
   ) {}
 
   async isExist(email: string): Promise<EmployeeModel.Status | null> {
@@ -31,7 +31,7 @@ export class EmployeeMongoRepository
   }
 
   async create(
-    employee: EmployeeModel.PrimitiviesData,
+    employee: EmployeeModel.PrimitivesData,
   ): Promise<EmployeeModel.CreateResponseDto> {
     const { id, ...rest } = employee;
     const createdEmployee = await this.employeeModel.create({

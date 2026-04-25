@@ -2,6 +2,6 @@ import { EmployeeModel } from '../../domain/models/employee';
 
 export interface CreateEmployeeRepositoryPort {
   create(
-    employee: EmployeeModel.PrimitiviesData,
+    employee: EmployeeModel.PrimitivesData,
   ): Promise<EmployeeModel.CreateResponseDto>;
 }
