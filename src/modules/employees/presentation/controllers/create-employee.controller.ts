@@ -4,6 +4,7 @@ import { CreateEmployeeUseCase } from '../../application/usecases/create-employe
 import { EmployeeModel } from '../../domain/models/employee';
 import { MissingParamError } from '../errors/missing-param.error';
 import { ServerError } from '../http-exceptions/server-error';
+import { domainErrorStatusMap } from '../http-exceptions/http-error.mapper';
 
 @Controller('employee')
 export class CreateEmployeeController {
@@ -34,6 +35,14 @@ export class CreateEmployeeController {
         throw error;
       }
       console.error(error);
+
+      const status = domainErrorStatusMap.get(
+        (error as Error).constructor as new (...args: any[]) => Error,
+      );
+
+      if (status) {
+        throw new HttpException((error as Error).message, status);
+      }
       throw new ServerError();
     }
   }
