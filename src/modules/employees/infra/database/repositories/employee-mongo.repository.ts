@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 import { Inject, Injectable } from '@nestjs/common';
 import { FindActiveEmployeeByEmail } from '../../../application/ports/find-active-employee-by-email.port';
 import { EmployeeModel } from '../../../domain/models/employee';
@@ -32,9 +31,13 @@ export class EmployeeMongoRepository
   }
 
   async create(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     employee: EmployeeModel.PrimitiviesData,
   ): Promise<EmployeeModel.CreateResponseDto> {
-    throw new Error('Method not implemented.');
+    const { id, ...rest } = employee;
+    const createdEmployee = await this.employeeModel.create({
+      _id: id,
+      ...rest,
+    });
+    return { id: createdEmployee._id.toString() };
   }
 }
