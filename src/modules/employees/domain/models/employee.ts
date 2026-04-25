@@ -25,7 +25,7 @@ export namespace EmployeeModel {
     deactivateAt?: Date | null;
   }
 
-  export interface CreateData {
+  export interface PrimitiviesData {
     id: string;
     name: string;
     email: string;
