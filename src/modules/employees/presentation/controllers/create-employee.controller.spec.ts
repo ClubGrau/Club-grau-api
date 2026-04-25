@@ -5,6 +5,7 @@ import { CreateEmployeeUseCase } from '../../application/usecases/create-employe
 import { EmployeeModel } from '../../domain/models/employee';
 import { MissingParamError } from '../errors/missing-param.error';
 import { ServerError } from '../http-exceptions/server-error';
+import { PasswordNotMatchError } from '../../domain/errors/password-not-match.error';
 
 const makeStubs = () => ({
   createEmployeeUseCaseStub: {
@@ -182,5 +183,46 @@ describe('CreateEmployeeController', () => {
     expect(response).toEqual({
       id: 'valid_id',
     });
+  });
+
+  it('should throw HttpException with correct status for mapped domain errors', async () => {
+    const { sut, createEmployeeUseCaseStub } = await makeSut();
+    jest
+      .spyOn(createEmployeeUseCaseStub, 'execute')
+      .mockImplementationOnce(() => {
+        throw new PasswordNotMatchError();
+      });
+    const request = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'different',
+    };
+    const response = sut.handle(request);
+    await expect(response).rejects.toThrow(
+      'Password and passwordConfirmation do not match',
+    );
+    // O HttpException do NestJS tem status 400 para esse erro
+    await expect(response).rejects.toHaveProperty('status', 400);
+  });
+
+  it('should throw ServerError for unmapped errors', async () => {
+    const { sut, createEmployeeUseCaseStub } = await makeSut();
+    jest
+      .spyOn(createEmployeeUseCaseStub, 'execute')
+      .mockImplementationOnce(() => {
+        throw new Error('Unexpected error');
+      });
+    const request = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      role: 'admin' as EmployeeModel.Role,
+      password: 'P@ssword123',
+      passwordConfirmation: 'P@ssword123',
+    };
+    const response = sut.handle(request);
+    await expect(response).rejects.toThrow(ServerError);
+    await expect(response).rejects.toThrow('Internal server error');
   });
 });
