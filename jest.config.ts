@@ -29,7 +29,7 @@ const config = {
     '!<rootDir>/src/**/ports/*.ts',
     '!<rootDir>/src/**/providers/*.ts',
     '!<rootDir>/src/**/schemas/*.ts',
-    '!<rootDir>/src/**/utils/setup/*.ts',
+    '!<rootDir>/src/**/utils/setups/*.ts',
   ],
 
   // The directory where Jest should output its coverage files
