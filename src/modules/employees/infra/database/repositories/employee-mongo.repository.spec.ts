@@ -45,4 +45,13 @@ describe('EmployeeMongoRepository', () => {
     expect(sut).toBeDefined();
     expect(sut).toBeInstanceOf(EmployeeMongoRepository);
   });
+
+  describe('Find Active Employee by Email', () => {
+    it('should have isExist method', async () => {
+      const { sut } = await makeSut();
+      expect(sut.isExist.bind(sut)).toBeDefined();
+      expect(typeof sut.isExist).toBe('function');
+      expect(sut).toHaveProperty('isExist');
+    });
+  });
 });
