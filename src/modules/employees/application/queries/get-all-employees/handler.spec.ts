@@ -3,6 +3,7 @@ import { GetAllEmployeesHandler } from './handler';
 import { GetAllEmployeesQuery } from './query';
 import { EmployeeModel } from '../../../domain/models/employee';
 import { GetAllEmployeesRepositoryPort } from '../../ports/get-all-employees.repository.port';
+import { GetAllEmployeesResult } from './result';
 
 const makeStubs = () => ({
   getAllEmployeesStub: {
@@ -98,6 +99,39 @@ describe('GetAllEmployeesHandler', () => {
     expect(getAllEmployeesSpy).toHaveBeenCalledWith({
       page: 1,
       limit: 10,
+    });
+  });
+
+  it('should return GetAllEmployeesResult with repository data', async () => {
+    const { sut, getAllEmployeesStub } = await makeSut();
+    const employees = [
+      {
+        id: 'valid_employee_id',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        password: 'password123',
+        nif: 123456789,
+        role: EmployeeModel.Role.Admin,
+        isActive: true,
+        createdAt: new Date('2024-06-01T00:00:00Z'),
+        deactivateAt: null,
+      },
+    ];
+    const total = 1;
+    jest
+      .spyOn(getAllEmployeesStub, 'getAll')
+      .mockResolvedValueOnce({ employees, total });
+
+    const response = sut.execute(new GetAllEmployeesQuery(1, 10));
+    await expect(response).resolves.toBeDefined();
+    expect(await response).toEqual(new GetAllEmployeesResult(employees, total));
+    expect(getAllEmployeesStub.getAll).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
+    });
+    expect(await response).toEqual({
+      employees,
+      total,
     });
   });
 });
