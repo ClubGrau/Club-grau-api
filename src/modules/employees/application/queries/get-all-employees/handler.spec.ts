@@ -1,16 +1,47 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetAllEmployeesHandler } from './handler';
 import { GetAllEmployeesQuery } from './query';
+import { EmployeeModel } from '../../../domain/models/employee';
+import { GetAllEmployeesRepositoryPort } from '../../ports/get-all-employees.repository.port';
+
+const makeStubs = () => ({
+  getAllEmployeesStub: {
+    getAll: jest.fn().mockResolvedValue({
+      employees: [
+        {
+          id: 'valid_employee_id',
+          name: 'John Doe',
+          email: 'john.doe@example.com',
+          password: 'password123',
+          nif: 123456789,
+          role: EmployeeModel.Role.Admin,
+          isActive: true,
+          createdAt: new Date('2024-06-01T00:00:00Z'),
+          deactivateAt: null,
+        },
+      ],
+      total: 1,
+    }) as jest.MockedFunction<GetAllEmployeesRepositoryPort['getAll']>,
+  } satisfies GetAllEmployeesRepositoryPort,
+});
 
 const makeSut = async () => {
+  const { getAllEmployeesStub } = makeStubs();
   const testModule: TestingModule = await Test.createTestingModule({
-    providers: [GetAllEmployeesHandler],
+    providers: [
+      GetAllEmployeesHandler,
+      {
+        provide: 'GET_ALL_EMPLOYEES_REPOSITORY_PORT',
+        useValue: getAllEmployeesStub,
+      },
+    ],
   }).compile();
 
   const sut = testModule.get<GetAllEmployeesHandler>(GetAllEmployeesHandler);
 
   return {
     sut,
+    getAllEmployeesStub,
   };
 };
 
@@ -37,5 +68,22 @@ describe('GetAllEmployeesHandler', () => {
       new GetAllEmployeesQuery(params.page, params.limit),
     );
     await expect(response).resolves.toBeDefined();
+  });
+
+  it('should call GetAllEmployeesRepository with correct params', async () => {
+    const { sut, getAllEmployeesStub } = await makeSut();
+    const params = {
+      page: 2,
+      limit: 10,
+    };
+    const getAllEmployeesSpy = jest.spyOn(getAllEmployeesStub, 'getAll');
+    const response = sut.execute(
+      new GetAllEmployeesQuery(params.page, params.limit),
+    );
+    await expect(response).resolves.toBeDefined();
+    expect(getAllEmployeesSpy).toHaveBeenCalledWith({
+      page: params.page,
+      limit: params.limit,
+    });
   });
 });
