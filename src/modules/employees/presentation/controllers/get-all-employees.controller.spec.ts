@@ -110,4 +110,15 @@ describe('GetAllEmployeesController', () => {
     const response = await sut.handle(undefined, undefined);
     expect(response.total).toBe(total);
   });
+
+  it('should always return data as an array, even if employees is empty', async () => {
+    const { sut, queryBusStub } = await makeSut();
+    (queryBusStub.execute as jest.Mock).mockResolvedValueOnce({
+      employees: [],
+      total: 0,
+    });
+    const response = await sut.handle(undefined, undefined);
+    expect(Array.isArray(response.data)).toBe(true);
+    expect(response.data).toEqual([]);
+  });
 });
