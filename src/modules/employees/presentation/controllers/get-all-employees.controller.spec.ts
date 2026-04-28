@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetAllEmployeesController } from './get-all-employees.controller';
 import { IQueryBus, QueryBus } from '@nestjs/cqrs';
+import { EmployeeModel } from '../../domain/models/employee';
+import { GetAllEmployeesQuery } from '../../application/queries/get-all-employees/query';
 
 const makeStubs = () => ({
   queryBusStub: {
@@ -43,7 +45,7 @@ describe('GetAllEmployeesController', () => {
     const params = { page: '1', limit: '10' };
     const getQueryStub = (
       queryBusStub.execute as jest.Mock
-    ).mockResolvedValueOnce([]);
+    ).mockResolvedValueOnce({ employees: [], total: 0 });
     await sut.handle(params.page, params.limit);
     expect(getQueryStub).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -51,5 +53,49 @@ describe('GetAllEmployeesController', () => {
         limit: Number(params.limit),
       }),
     );
+  });
+
+  it('should return a list of employees and total count with default pagination', async () => {
+    const { sut, queryBusStub } = await makeSut();
+    const employees = [
+      {
+        id: 'valid_employee_id',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        nif: 123456789,
+        role: 'admin',
+        isActive: true,
+        createdAt: new Date('2024-06-01T00:00:00Z'),
+        deactivateAt: null,
+      },
+    ] as EmployeeModel.PrimitivesData[];
+
+    const total = 1;
+    const getQueryStub = (
+      queryBusStub.execute as jest.Mock
+    ).mockResolvedValueOnce({
+      employees,
+      total,
+    });
+
+    const response = await sut.handle(undefined, undefined);
+    expect(response).toEqual({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      data: expect.any(Array),
+      total,
+    });
+    expect(response.data[0]).toEqual(
+      expect.objectContaining({
+        id: 'valid_employee_id',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        nif: 123456789,
+        role: 'admin',
+        isActive: true,
+        createdAt: new Date('2024-06-01T00:00:00Z'),
+        deactivateAt: null,
+      }),
+    );
+    expect(getQueryStub).toHaveBeenCalledWith(new GetAllEmployeesQuery(1, 10));
   });
 });
