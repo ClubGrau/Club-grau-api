@@ -98,4 +98,16 @@ describe('GetAllEmployeesController', () => {
     );
     expect(getQueryStub).toHaveBeenCalledWith(new GetAllEmployeesQuery(1, 10));
   });
+
+  it('should reflect the total value returned by QueryBus without transformation', async () => {
+    const { sut, queryBusStub } = await makeSut();
+    const employees = [] as EmployeeModel.PrimitivesData[];
+    const total = 42;
+    (queryBusStub.execute as jest.Mock).mockResolvedValueOnce({
+      employees,
+      total,
+    });
+    const response = await sut.handle(undefined, undefined);
+    expect(response.total).toBe(total);
+  });
 });
