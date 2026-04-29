@@ -10,4 +10,8 @@ export const makeRepositoriesProvider = (): Provider[] => [
     provide: 'CREATE_EMPLOYEE_REPOSITORY_PORT',
     useClass: EmployeeMongoRepository,
   },
+  {
+    provide: 'GET_ALL_EMPLOYEES_REPOSITORY_PORT',
+    useClass: EmployeeMongoRepository,
+  },
 ];

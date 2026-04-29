@@ -22,7 +22,10 @@ const mongooseMocks = () => {
 };
 
 const makeSut = async () => {
-  const employeeModelMock = mongooseMocks();
+  const employeeModelMock = {
+    ...mongooseMocks(),
+    countDocuments: jest.fn(),
+  };
   const testModule: TestingModule = await Test.createTestingModule({
     controllers: [],
     providers: [
@@ -144,6 +147,81 @@ describe('EmployeeMongoRepository', () => {
         deactivateAt: null,
       });
       expect(result).toEqual({ id: employeeData.id });
+    });
+  });
+
+  describe('getAll Employees', () => {
+    it('should have getAll method', async () => {
+      const { sut } = await makeSut();
+      expect(sut.getAll.bind(sut)).toBeDefined();
+      expect(typeof sut.isExist).toBe('function');
+      expect(sut).toHaveProperty('getAll');
+    });
+
+    it('should return an empty list of employees with total 0 if no employees are found', async () => {
+      const { sut, employeeModelMock } = await makeSut();
+      const options = { page: 1, limit: 10 };
+      jest.spyOn(employeeModelMock, 'countDocuments').mockResolvedValueOnce(0);
+      jest.spyOn(employeeModelMock, 'find').mockReturnValueOnce({
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValueOnce([]),
+      } as any);
+      const result = await sut.getAll(options);
+      expect(result).toEqual({ employees: [], total: 0 });
+    });
+
+    it('should return a list of employees and total count with a valid Mongoose query', async () => {
+      const { sut, employeeModelMock } = await makeSut();
+      const options = { page: 1, limit: 10 };
+      const employees = [
+        {
+          _id: new mongoose.Types.ObjectId().toHexString(),
+          name: 'Jane Doe',
+          email: 'jane.doe@example.com',
+          role: 'manager',
+          password: 'hashed_password',
+          nif: 987654321,
+          isActive: true,
+          createdAt: new Date('2024-01-01T00:00:00Z'),
+          deactivateAt: null,
+        },
+        {
+          _id: new mongoose.Types.ObjectId().toHexString(),
+          name: 'John Smith',
+          email: 'john.smith@example.com',
+          role: 'developer',
+          password: 'hashed_password',
+          nif: 123456789,
+          isActive: true,
+          createdAt: new Date('2024-01-01T00:00:00Z'),
+          deactivateAt: null,
+        },
+      ];
+      const total = 2;
+      jest
+        .spyOn(employeeModelMock, 'countDocuments')
+        .mockResolvedValueOnce(total);
+      jest.spyOn(employeeModelMock, 'find').mockReturnValueOnce({
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockResolvedValueOnce(employees),
+      } as any);
+      // O resultado esperado deve ser igual ao formato retornado pelo repositório (id, sem _id, sem password)
+      const expectedEmployees = employees.map((e) => ({
+        id: e._id,
+        name: e.name,
+        email: e.email,
+        role: e.role,
+        nif: e.nif,
+        isActive: e.isActive,
+        createdAt: e.createdAt,
+        deactivateAt: e.deactivateAt,
+      }));
+      const result = await sut.getAll(options);
+      expect(result).toEqual({ employees: expectedEmployees, total });
     });
   });
 });
