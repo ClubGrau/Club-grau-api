@@ -146,4 +146,13 @@ describe('EmployeeMongoRepository', () => {
       expect(result).toEqual({ id: employeeData.id });
     });
   });
+
+  describe('getAll Employees', () => {
+    it('should have getAll method', async () => {
+      const { sut } = await makeSut();
+      expect(sut.getAll.bind(sut)).toBeDefined();
+      expect(typeof sut.isExist).toBe('function');
+      expect(sut).toHaveProperty('getAll');
+    });
+  });
 });
