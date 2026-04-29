@@ -49,11 +49,27 @@ export class EmployeeMongoRepository
     return { id: createdEmployee._id.toString() };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAll(options: GetAllOptions): Promise<GetAllEmployeesResponse> {
-    return Promise.resolve({
-      employees: [],
-      total: 0,
-    });
+    const { page, limit } = options;
+    const countEmployees = await this.employeeModel.countDocuments();
+    const employees = await this.employeeModel
+      .find()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    return {
+      employees: employees.map((employee) => ({
+        id: employee._id.toString(),
+        name: employee.name,
+        email: employee.email,
+        role: employee.role,
+        nif: employee.nif,
+        isActive: employee.isActive,
+        createdAt: employee.createdAt,
+        deactivateAt: employee.deactivateAt,
+      })),
+      total: countEmployees,
+    };
   }
 }

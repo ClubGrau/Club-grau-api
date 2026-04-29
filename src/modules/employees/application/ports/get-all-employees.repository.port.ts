@@ -6,7 +6,7 @@ export interface GetAllOptions {
 }
 
 export interface GetAllEmployeesResponse {
-  employees: EmployeeModel.PrimitivesData[];
+  employees: Omit<EmployeeModel.PrimitivesData, 'password'>[];
   total: number;
 }
 
