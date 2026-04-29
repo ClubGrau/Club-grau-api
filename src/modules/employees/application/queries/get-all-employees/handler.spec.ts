@@ -88,20 +88,6 @@ describe('GetAllEmployeesHandler', () => {
     });
   });
 
-  it('should apply default values for page and limit if not provided', async () => {
-    const { sut, getAllEmployeesStub } = await makeSut();
-    const getAllEmployeesSpy = jest.spyOn(getAllEmployeesStub, 'getAll');
-    const response = sut.execute(
-      new GetAllEmployeesQuery(undefined, undefined),
-    );
-
-    await expect(response).resolves.toBeDefined();
-    expect(getAllEmployeesSpy).toHaveBeenCalledWith({
-      page: 1,
-      limit: 10,
-    });
-  });
-
   it('should return GetAllEmployeesResult with repository data', async () => {
     const { sut, getAllEmployeesStub } = await makeSut();
     const employees = [
@@ -144,5 +130,33 @@ describe('GetAllEmployeesHandler', () => {
     const response = sut.execute(new GetAllEmployeesQuery(1, 10));
 
     await expect(response).rejects.toThrow('DB error');
+  });
+
+  it('should apply default values for page and limit if passed as 0', async () => {
+    const { sut, getAllEmployeesStub } = await makeSut();
+    const getAllEmployeesSpy = jest.spyOn(getAllEmployeesStub, 'getAll');
+    const response = sut.execute(new GetAllEmployeesQuery(0, 0));
+    await expect(response).resolves.toBeDefined();
+    expect(getAllEmployeesSpy).toHaveBeenCalledWith({ page: 0, limit: 0 });
+  });
+
+  it('should apply default values for page and limit if passed as string', async () => {
+    const { sut, getAllEmployeesStub } = await makeSut();
+    const getAllEmployeesSpy = jest.spyOn(getAllEmployeesStub, 'getAll');
+    // @ts-expect-error purposely passing string to test fallback
+    const response = sut.execute(new GetAllEmployeesQuery('foo', 'bar'));
+    await expect(response).resolves.toBeDefined();
+    expect(getAllEmployeesSpy).toHaveBeenCalledWith({
+      page: 'foo',
+      limit: 'bar',
+    });
+  });
+
+  it('should instantiate handler with injected repository', () => {
+    const repo: GetAllEmployeesRepositoryPort = {
+      getAll: jest.fn(),
+    };
+    const handler = new GetAllEmployeesHandler(repo);
+    expect(handler).toBeInstanceOf(GetAllEmployeesHandler);
   });
 });

@@ -12,7 +12,7 @@ export class GetAllEmployeesHandler implements IQueryHandler<GetAllEmployeesQuer
   ) {}
 
   async execute(query: GetAllEmployeesQuery): Promise<GetAllEmployeesResult> {
-    const { page = 1, limit = 10 } = query;
+    const { page, limit } = query;
     const { employees, total } = await this.getAllEmployeesRepository.getAll({
       page,
       limit,
