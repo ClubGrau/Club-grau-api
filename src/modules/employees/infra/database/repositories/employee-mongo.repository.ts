@@ -3,10 +3,18 @@ import { Inject, Injectable } from '@nestjs/common';
 import { FindActiveEmployeeByEmail } from '../../../application/ports/find-active-employee-by-email.port';
 import { EmployeeModel } from '../../../domain/models/employee';
 import { CreateEmployeeRepositoryPort } from '../../../application/ports/create-employee.repository.port';
+import {
+  GetAllOptions,
+  GetAllEmployeesResponse,
+  GetAllEmployeesRepositoryPort,
+} from '../../../application/ports/get-all-employees.repository.port';
 
 @Injectable()
 export class EmployeeMongoRepository
-  implements FindActiveEmployeeByEmail, CreateEmployeeRepositoryPort
+  implements
+    FindActiveEmployeeByEmail,
+    CreateEmployeeRepositoryPort,
+    GetAllEmployeesRepositoryPort
 {
   constructor(
     @Inject('EMPLOYEE_MODEL')
@@ -39,5 +47,13 @@ export class EmployeeMongoRepository
       ...rest,
     });
     return { id: createdEmployee._id.toString() };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getAll(options: GetAllOptions): Promise<GetAllEmployeesResponse> {
+    return Promise.resolve({
+      employees: [],
+      total: 0,
+    });
   }
 }
