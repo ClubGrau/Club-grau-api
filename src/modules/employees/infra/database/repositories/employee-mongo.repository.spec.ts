@@ -154,5 +154,12 @@ describe('EmployeeMongoRepository', () => {
       expect(typeof sut.isExist).toBe('function');
       expect(sut).toHaveProperty('getAll');
     });
+
+    it('should return an empty list of employees with total 0', async () => {
+      const { sut } = await makeSut();
+      const options = { page: 1, limit: 10 };
+      const result = await sut.getAll(options);
+      expect(result).toEqual({ employees: [], total: 0 });
+    });
   });
 });
