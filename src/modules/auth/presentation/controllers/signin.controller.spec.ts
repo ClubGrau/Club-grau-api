@@ -1,23 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
+import { SigninController } from './signin.controller';
 
 const makeSut = async () => {
   const testModule: TestingModule = await Test.createTestingModule({
-    controllers: [AuthController],
+    controllers: [SigninController],
     providers: [],
   }).compile();
 
-  const sut = testModule.get<AuthController>(AuthController);
+  const sut = testModule.get<SigninController>(SigninController);
 
   return {
     sut,
   };
 };
 
-describe('AuthController', () => {
+describe('SigninController', () => {
   it('should be defined', async () => {
     const { sut } = await makeSut();
     expect(sut).toBeDefined();
-    expect(sut).toBeInstanceOf(AuthController);
+    expect(sut).toBeInstanceOf(SigninController);
   });
 });
