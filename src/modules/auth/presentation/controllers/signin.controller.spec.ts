@@ -2,17 +2,35 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SigninController } from './signin.controller';
 import { MissingParamError } from '../../../employees/presentation/errors/missing-param.error';
 import { BadRequest } from '../../../employees/presentation/http-exceptions/bad-request';
+import { SigninUseCase } from '../../application/usecases/signin.usecase';
+
+const makeStubs = () => ({
+  signinStub: {
+    execute: jest
+      .fn()
+      .mockResolvedValue({ token: 'valid_token' }) as jest.MockedFunction<
+      SigninUseCase['execute']
+    >,
+  } satisfies SigninUseCase,
+});
 
 const makeSut = async () => {
+  const { signinStub } = makeStubs();
   const testModule: TestingModule = await Test.createTestingModule({
     controllers: [SigninController],
-    providers: [],
+    providers: [
+      {
+        provide: SigninUseCase,
+        useValue: signinStub,
+      },
+    ],
   }).compile();
 
   const sut = testModule.get<SigninController>(SigninController);
 
   return {
     sut,
+    signinStub,
   };
 };
 
@@ -61,5 +79,19 @@ describe('SigninController', () => {
     await expect(response).rejects.toThrow(
       new MissingParamError('password').message,
     );
+  });
+
+  it('show should call Signin with correct params', async () => {
+    const { sut, signinStub } = await makeSut();
+    const executeSpy = jest.spyOn(signinStub, 'execute');
+    const request = {
+      email: 'valid_email@mail.com',
+      password: 'anypassword',
+    };
+    await sut.handle(request);
+    expect(executeSpy).toHaveBeenCalledWith({
+      email: 'valid_email@mail.com',
+      password: 'anypassword',
+    });
   });
 });
