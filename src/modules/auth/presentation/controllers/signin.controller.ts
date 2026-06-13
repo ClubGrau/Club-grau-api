@@ -20,7 +20,9 @@ export class SigninController {
         }
       }
 
-      return await this.signinUseCase.execute(request);
+      const { email, password } = request;
+      const { token } = await this.signinUseCase.execute({ email, password });
+      return { token };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
