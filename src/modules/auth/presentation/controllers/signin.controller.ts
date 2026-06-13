@@ -9,6 +9,10 @@ export class SigninController {
       throw new BadRequest(new MissingParamError('email').message);
     }
 
+    if (!request.password) {
+      throw new BadRequest(new MissingParamError('password').message);
+    }
+
     return Promise.resolve();
   }
 }
