@@ -109,4 +109,16 @@ describe('SigninController', () => {
     await expect(response).rejects.toThrow(ServerError);
     await expect(response).rejects.toThrow('Internal server error');
   });
+
+  it('should return token if all valid data is provided to login', async () => {
+    const { sut } = await makeSut();
+    const request = {
+      email: 'valid_email@mail.com',
+      password: 'anypassword',
+    };
+    const response = await sut.handle(request);
+    expect(response).toEqual({ token: 'valid_token' });
+    expect(response).not.toBeNull();
+    expect(response).toHaveProperty('token');
+  });
 });
