@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SigninController } from './signin.controller';
+import { MissingParamError } from '../../../employees/presentation/errors/missing-param.error';
+import { BadRequest } from '../../../employees/presentation/http-exceptions/bad-request';
 
 const makeSut = async () => {
   const testModule: TestingModule = await Test.createTestingModule({
@@ -33,5 +35,18 @@ describe('SigninController', () => {
       email: 'john.doe@example.com',
       password: 'P@ssword123',
     });
+  });
+
+  it('should return badRequest if email is not provided', async () => {
+    const { sut } = await makeSut();
+    const request = {
+      email: '',
+      password: 'P@ssword123',
+    };
+    const response = sut.handle(request);
+    await expect(response).rejects.toThrow(BadRequest);
+    await expect(response).rejects.toThrow(
+      new MissingParamError('email').message,
+    );
   });
 });
