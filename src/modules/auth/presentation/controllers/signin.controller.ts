@@ -1,22 +1,32 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, HttpException, Post } from '@nestjs/common';
 import { BadRequest } from '../../../employees/presentation/http-exceptions/bad-request';
 import { MissingParamError } from '../../../employees/presentation/errors/missing-param.error';
 import { SigninUseCase } from '../../application/usecases/signin.usecase';
+import { ServerError } from '../../../shared/errors/http-expections/server.error';
 
 @Controller('auth')
 export class SigninController {
   constructor(private readonly signinUseCase: SigninUseCase) {}
 
-  async handle(request: { email: string; password: string }): Promise<void> {
-    const requiredFields = ['email', 'password'];
-    for (const field of requiredFields) {
-      if (!request[field]) {
-        throw new BadRequest(new MissingParamError(field).message);
+  @Post('signin')
+  async handle(
+    @Body() request: { email: string; password: string },
+  ): Promise<{ token: string }> {
+    try {
+      const requiredFields = ['email', 'password'];
+      for (const field of requiredFields) {
+        if (!request[field]) {
+          throw new BadRequest(new MissingParamError(field).message);
+        }
       }
+
+      return await this.signinUseCase.execute(request);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      console.error(error);
+      throw new ServerError();
     }
-
-    await this.signinUseCase.execute(request);
-
-    return Promise.resolve();
   }
 }
