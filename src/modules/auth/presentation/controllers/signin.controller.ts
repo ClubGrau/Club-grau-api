@@ -5,12 +5,11 @@ import { MissingParamError } from '../../../employees/presentation/errors/missin
 @Controller('auth')
 export class SigninController {
   async handle(request: { email: string; password: string }): Promise<void> {
-    if (!request.email) {
-      throw new BadRequest(new MissingParamError('email').message);
-    }
-
-    if (!request.password) {
-      throw new BadRequest(new MissingParamError('password').message);
+    const requiredFields = ['email', 'password'];
+    for (const field of requiredFields) {
+      if (!request[field]) {
+        throw new BadRequest(new MissingParamError(field).message);
+      }
     }
 
     return Promise.resolve();
