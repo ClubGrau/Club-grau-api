@@ -49,4 +49,17 @@ describe('SigninController', () => {
       new MissingParamError('email').message,
     );
   });
+
+  it('should return badRequest if no password is provided', async () => {
+    const { sut } = await makeSut();
+    const request = {
+      email: 'valid_email@mail.com',
+      password: '',
+    };
+    const response = sut.handle(request);
+    await expect(response).rejects.toThrow(BadRequest);
+    await expect(response).rejects.toThrow(
+      new MissingParamError('password').message,
+    );
+  });
 });
