@@ -12,7 +12,7 @@ const makeStubs = () => ({
       .mockResolvedValue({ token: 'valid_token' }) as jest.MockedFunction<
       SigninUseCase['execute']
     >,
-  } satisfies SigninUseCase,
+  } satisfies Pick<SigninUseCase, 'execute'>,
 });
 
 const makeSut = async () => {
