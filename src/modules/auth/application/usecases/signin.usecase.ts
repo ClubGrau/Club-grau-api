@@ -11,7 +11,10 @@ export class SigninUseCase {
     email: string;
     password: string;
   }): Promise<{ token: string }> {
-    await this.employeePoliciesService.checkIsActive(params.email);
-    return Promise.resolve({ token: 'valid_token' });
+    const policyResult = await this.employeePoliciesService.checkIsActive(
+      params.email,
+    );
+    if (policyResult instanceof Error) throw policyResult;
+    return { token: 'valid_token' };
   }
 }

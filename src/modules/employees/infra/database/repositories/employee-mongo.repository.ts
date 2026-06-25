@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
 import { Inject, Injectable } from '@nestjs/common';
-import { FindActiveEmployeeByEmail } from '../../../application/ports/find-active-employee-by-email.port';
+import { FindActiveEmployeeByEmailPort } from '../../../application/ports/find-active-employee-by-email.port';
 import { EmployeeModel } from '../../../domain/models/employee';
 import { CreateEmployeeRepositoryPort } from '../../../application/ports/create-employee.repository.port';
 import {
@@ -12,7 +12,7 @@ import {
 @Injectable()
 export class EmployeeMongoRepository
   implements
-    FindActiveEmployeeByEmail,
+    FindActiveEmployeeByEmailPort,
     CreateEmployeeRepositoryPort,
     GetAllEmployeesRepositoryPort
 {
