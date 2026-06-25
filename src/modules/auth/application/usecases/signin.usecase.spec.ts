@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SigninUseCase } from './signin.usecase';
 import { EmployeePoliciesService } from '../../../employees/domain/services/employee-policies.service';
+import { EmployeeNotFoundError } from '../../../employees/domain/errors/employee-not-found.error';
+import { InactiveEmployeeError } from '../../../employees/domain/errors/inactive-employee.error';
 
 const makeStubs = () => ({
   employeePoliciesServiceStub: {
@@ -42,5 +44,32 @@ describe('SigninUseCase', () => {
 
     await sut.execute({ email, password: '123456' });
     expect(checkIsActiveSpy).toHaveBeenCalledWith('john.doe@example.com');
+  });
+
+  it('should throw EmployeeNotFoundError when checkIsActive returns it', async () => {
+    const { sut, employeePoliciesServiceStub } = await makeSut();
+    employeePoliciesServiceStub.checkIsActive.mockResolvedValueOnce(
+      new EmployeeNotFoundError(),
+    );
+    const promise = sut.execute({
+      email: 'john.doe@example.com',
+      password: '123456',
+    });
+    await expect(promise).rejects.toBeInstanceOf(EmployeeNotFoundError);
+    await expect(promise).rejects.toThrow('Employee not found');
+  });
+
+  it('should throw InactiveEmployeeError when checkIsActive returns it', async () => {
+    const { sut, employeePoliciesServiceStub } = await makeSut();
+    employeePoliciesServiceStub.checkIsActive.mockResolvedValueOnce(
+      new InactiveEmployeeError(),
+    );
+
+    const promise = sut.execute({
+      email: 'john.doe@example.com',
+      password: '123456',
+    });
+    await expect(promise).rejects.toBeInstanceOf(InactiveEmployeeError);
+    await expect(promise).rejects.toThrow('Existent employee is inactive');
   });
 });
