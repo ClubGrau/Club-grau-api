@@ -3,6 +3,7 @@ import { BcryptAdapter } from './bcrypt.adapter';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashed_value'),
+  compare: jest.fn().mockResolvedValue(true),
 }));
 
 const makeSut = (): BcryptAdapter => new BcryptAdapter();
@@ -42,5 +43,11 @@ describe('BcryptAdapter', () => {
       .mockImplementationOnce(() => Promise.reject(new Error()));
     const promise = sut.hash('any_value');
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should have a method to compare values', () => {
+    const sut = makeSut();
+    expect(sut.compare.bind(sut)).toBeDefined();
+    expect(typeof sut.compare).toBe('function');
   });
 });
