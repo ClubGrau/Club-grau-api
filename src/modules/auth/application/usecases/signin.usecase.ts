@@ -1,7 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Body, Inject, Injectable } from '@nestjs/common';
 import { EmployeePoliciesService } from '../../../employees/domain/services/employee-policies.service';
 import type { PasswordValidatorPort } from '../ports/password-validator.port';
 import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
+import type { SigninModel } from '../../domain/models/signin';
 
 @Injectable()
 export class SigninUseCase {
@@ -11,10 +12,9 @@ export class SigninUseCase {
     private readonly passwordValidator: PasswordValidatorPort,
   ) {}
 
-  async execute(params: {
-    email: string;
-    password: string;
-  }): Promise<{ token: string }> {
+  async execute(
+    @Body() params: SigninModel.RequestDto,
+  ): Promise<SigninModel.ResponseDto> {
     const employeeOrError = await this.employeePoliciesService.checkIsActive(
       params.email,
     );
