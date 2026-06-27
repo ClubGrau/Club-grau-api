@@ -1,10 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { FindActiveEmployeeByEmailPort } from '../../application/ports/find-active-employee-by-email.port';
 import { EmployeeNotFoundError } from '../errors/employee-not-found.error';
 import { InactiveEmployeeError } from '../errors/inactive-employee.error';
 import { EmployeeModel } from '../models/employee';
+import type { FindActiveEmployeeByEmailPort } from '../../application/ports/find-active-employee-by-email.port';
 
-type EmployeePoliciesError = EmployeeNotFoundError | InactiveEmployeeError;
+export type EmployeePoliciesError =
+  | EmployeeNotFoundError
+  | InactiveEmployeeError;
 
 @Injectable()
 export class EmployeePoliciesService {
