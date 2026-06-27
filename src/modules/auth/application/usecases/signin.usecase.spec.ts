@@ -3,7 +3,7 @@ import { SigninUseCase } from './signin.usecase';
 import { EmployeePoliciesService } from '../../../employees/domain/services/employee-policies.service';
 import { EmployeeNotFoundError } from '../../../employees/domain/errors/employee-not-found.error';
 import { InactiveEmployeeError } from '../../../employees/domain/errors/inactive-employee.error';
-import { PasswordValidatorPort } from '../ports/password-validator.port';
+import { ComparePort } from '../../../shared/infra/cryptograph/ports/compare.port';
 import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
 import { GenerateTokenPort } from '../ports/generate-token.port';
 
@@ -23,9 +23,9 @@ const makeStubs = () => ({
   } satisfies Pick<EmployeePoliciesService, 'checkIsActive'>,
   passwordValidatorStub: {
     compare: jest.fn().mockResolvedValue(true) as jest.MockedFunction<
-      PasswordValidatorPort['compare']
+      ComparePort['compare']
     >,
-  } satisfies Pick<PasswordValidatorPort, 'compare'>,
+  } satisfies Pick<ComparePort, 'compare'>,
   generateTokenStub: {
     generate: jest
       .fn()
@@ -49,7 +49,7 @@ const makeSut = async () => {
         useValue: employeePoliciesServiceStub,
       },
       {
-        provide: 'PASSWORD_VALIDATOR_PORT',
+        provide: 'COMPARE_PORT',
         useValue: passwordValidatorStub,
       },
       {

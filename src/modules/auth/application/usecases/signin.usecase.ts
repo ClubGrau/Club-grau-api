@@ -2,7 +2,7 @@ import { Body, Inject, Injectable } from '@nestjs/common';
 import { EmployeePoliciesService } from '../../../employees/domain/services/employee-policies.service';
 import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
 import { TokenPayloadModel } from '../../domain/models/token-payload';
-import type { PasswordValidatorPort } from '../ports/password-validator.port';
+import type { ComparePort } from '../../../shared/infra/cryptograph/ports/compare.port';
 import type { SigninModel } from '../../domain/models/signin';
 import type { GenerateTokenPort } from '../ports/generate-token.port';
 
@@ -10,8 +10,8 @@ import type { GenerateTokenPort } from '../ports/generate-token.port';
 export class SigninUseCase {
   constructor(
     private readonly employeePoliciesService: EmployeePoliciesService,
-    @Inject('PASSWORD_VALIDATOR_PORT')
-    private readonly passwordValidator: PasswordValidatorPort,
+    @Inject('COMPARE_PORT')
+    private readonly compare: ComparePort,
     @Inject('GENERATE_TOKEN_PORT')
     private readonly generateToken: GenerateTokenPort<TokenPayloadModel.Employee>,
   ) {}
@@ -26,7 +26,7 @@ export class SigninUseCase {
 
     const employee = employeeOrError;
 
-    const isPasswordValid = await this.passwordValidator.compare(
+    const isPasswordValid = await this.compare.compare(
       params.password,
       employee.password,
     );
