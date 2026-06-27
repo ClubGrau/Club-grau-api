@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EmployeePoliciesService } from '../../../employees/domain/services/employee-policies.service';
 import type { PasswordValidatorPort } from '../ports/password-validator.port';
+import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
 
 @Injectable()
 export class SigninUseCase {
@@ -21,7 +22,12 @@ export class SigninUseCase {
 
     const employee = employeeOrError;
 
-    await this.passwordValidator.compare(params.password, employee.password);
+    const isPasswordValid = await this.passwordValidator.compare(
+      params.password,
+      employee.password,
+    );
+    if (!isPasswordValid) throw new InvalidCredentialsError();
+
     return { token: 'valid_token' };
   }
 }
