@@ -5,6 +5,7 @@ import { EmployeeNotFoundError } from '../../../employees/domain/errors/employee
 import { InactiveEmployeeError } from '../../../employees/domain/errors/inactive-employee.error';
 import { PasswordValidatorPort } from '../ports/password-validator.port';
 import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
+import { GenerateTokenPort } from '../ports/generate-token.port';
 
 const makeStubs = () => ({
   employeePoliciesServiceStub: {
@@ -25,10 +26,21 @@ const makeStubs = () => ({
       PasswordValidatorPort['compare']
     >,
   } satisfies Pick<PasswordValidatorPort, 'compare'>,
+  generateTokenStub: {
+    generate: jest
+      .fn()
+      .mockResolvedValue({ token: 'valid_token' }) as jest.MockedFunction<
+      GenerateTokenPort<any>['generate']
+    >,
+  } satisfies Pick<GenerateTokenPort<any>, 'generate'>,
 });
 
 const makeSut = async () => {
-  const { employeePoliciesServiceStub, passwordValidatorStub } = makeStubs();
+  const {
+    employeePoliciesServiceStub,
+    passwordValidatorStub,
+    generateTokenStub,
+  } = makeStubs();
   const testModule: TestingModule = await Test.createTestingModule({
     providers: [
       SigninUseCase,
@@ -40,10 +52,19 @@ const makeSut = async () => {
         provide: 'PASSWORD_VALIDATOR_PORT',
         useValue: passwordValidatorStub,
       },
+      {
+        provide: 'GENERATE_TOKEN_PORT',
+        useValue: generateTokenStub,
+      },
     ],
   }).compile();
   const sut = testModule.get<SigninUseCase>(SigninUseCase);
-  return { sut, employeePoliciesServiceStub, passwordValidatorStub };
+  return {
+    sut,
+    employeePoliciesServiceStub,
+    passwordValidatorStub,
+    generateTokenStub,
+  };
 };
 
 describe('SigninUseCase', () => {
@@ -111,5 +132,27 @@ describe('SigninUseCase', () => {
     });
     await expect(promise).rejects.toBeInstanceOf(InvalidCredentialsError);
     await expect(promise).rejects.toThrow('Invalid credentials');
+  });
+
+  it('should call GenerateTokenPort with the correct payload', async () => {
+    const { sut, generateTokenStub } = await makeSut();
+    const payload = {
+      id: 'valid_id',
+      email: 'john.doe@example.com',
+      role: 'employee',
+    };
+    const generateTokenSpy = jest.spyOn(generateTokenStub, 'generate');
+    await sut.execute({ email: 'john.doe@example.com', password: '123456' });
+    expect(generateTokenSpy).toHaveBeenCalledWith(payload);
+  });
+
+  it('should return access token if all valid data is provided to login', async () => {
+    const { sut } = await makeSut();
+    const request = {
+      email: 'john.doe@example.com',
+      password: '123456',
+    };
+    const response = await sut.execute(request);
+    expect(response).toEqual({ token: 'valid_token' });
   });
 });
