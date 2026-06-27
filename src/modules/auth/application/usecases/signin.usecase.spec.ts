@@ -4,6 +4,7 @@ import { EmployeePoliciesService } from '../../../employees/domain/services/empl
 import { EmployeeNotFoundError } from '../../../employees/domain/errors/employee-not-found.error';
 import { InactiveEmployeeError } from '../../../employees/domain/errors/inactive-employee.error';
 import { PasswordValidatorPort } from '../ports/password-validator.port';
+import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
 
 const makeStubs = () => ({
   employeePoliciesServiceStub: {
@@ -99,5 +100,16 @@ describe('SigninUseCase', () => {
       '123456',
       'valid_hashed_password',
     );
+  });
+
+  it('should throw InvalidCredentials error when password is incorrect', async () => {
+    const { sut, passwordValidatorStub } = await makeSut();
+    passwordValidatorStub.compare.mockResolvedValueOnce(false);
+    const promise = sut.execute({
+      email: 'john.doe@example.com',
+      password: '123456',
+    });
+    await expect(promise).rejects.toBeInstanceOf(InvalidCredentialsError);
+    await expect(promise).rejects.toThrow('Invalid credentials');
   });
 });
