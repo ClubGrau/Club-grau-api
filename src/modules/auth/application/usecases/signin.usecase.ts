@@ -32,12 +32,12 @@ export class SigninUseCase {
     );
     if (!isPasswordValid) throw new InvalidCredentialsError();
 
-    await this.generateToken.generate({
+    const { token } = await this.generateToken.generate({
       id: employee.id,
       email: employee.email,
       role: employee.role,
     });
 
-    return { token: 'valid_token' };
+    return { token };
   }
 }
