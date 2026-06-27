@@ -3,17 +3,31 @@ import { SigninUseCase } from './signin.usecase';
 import { EmployeePoliciesService } from '../../../employees/domain/services/employee-policies.service';
 import { EmployeeNotFoundError } from '../../../employees/domain/errors/employee-not-found.error';
 import { InactiveEmployeeError } from '../../../employees/domain/errors/inactive-employee.error';
+import { PasswordValidatorPort } from '../ports/password-validator.port';
 
 const makeStubs = () => ({
   employeePoliciesServiceStub: {
-    checkIsActive: jest.fn().mockResolvedValue(null) as jest.MockedFunction<
-      EmployeePoliciesService['checkIsActive']
-    >,
+    checkIsActive: jest.fn().mockResolvedValue({
+      id: 'valid_id',
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'valid_hashed_password',
+      nif: null,
+      role: 'employee',
+      isActive: true,
+      createdAt: new Date(),
+      deactivateAt: null,
+    }) as jest.MockedFunction<EmployeePoliciesService['checkIsActive']>,
   } satisfies Pick<EmployeePoliciesService, 'checkIsActive'>,
+  passwordValidatorStub: {
+    compare: jest.fn().mockResolvedValue(true) as jest.MockedFunction<
+      PasswordValidatorPort['compare']
+    >,
+  } satisfies Pick<PasswordValidatorPort, 'compare'>,
 });
 
 const makeSut = async () => {
-  const { employeePoliciesServiceStub } = makeStubs();
+  const { employeePoliciesServiceStub, passwordValidatorStub } = makeStubs();
   const testModule: TestingModule = await Test.createTestingModule({
     providers: [
       SigninUseCase,
@@ -21,10 +35,14 @@ const makeSut = async () => {
         provide: EmployeePoliciesService,
         useValue: employeePoliciesServiceStub,
       },
+      {
+        provide: 'PASSWORD_VALIDATOR_PORT',
+        useValue: passwordValidatorStub,
+      },
     ],
   }).compile();
   const sut = testModule.get<SigninUseCase>(SigninUseCase);
-  return { sut, employeePoliciesServiceStub };
+  return { sut, employeePoliciesServiceStub, passwordValidatorStub };
 };
 
 describe('SigninUseCase', () => {
@@ -71,5 +89,15 @@ describe('SigninUseCase', () => {
     });
     await expect(promise).rejects.toBeInstanceOf(InactiveEmployeeError);
     await expect(promise).rejects.toThrow('Existent employee is inactive');
+  });
+
+  it('should call passwordValidator with correct params', async () => {
+    const { sut, passwordValidatorStub } = await makeSut();
+    const comparePasswordSpy = jest.spyOn(passwordValidatorStub, 'compare');
+    await sut.execute({ email: 'john.doe@example.com', password: '123456' });
+    expect(comparePasswordSpy).toHaveBeenCalledWith(
+      '123456',
+      'valid_hashed_password',
+    );
   });
 });
