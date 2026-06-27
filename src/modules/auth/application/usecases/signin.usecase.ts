@@ -1,8 +1,10 @@
 import { Body, Inject, Injectable } from '@nestjs/common';
 import { EmployeePoliciesService } from '../../../employees/domain/services/employee-policies.service';
-import type { PasswordValidatorPort } from '../ports/password-validator.port';
 import { InvalidCredentialsError } from '../../domain/errors/invalid-credentials.error';
+import { TokenPayloadModel } from '../../domain/models/token-payload';
+import type { PasswordValidatorPort } from '../ports/password-validator.port';
 import type { SigninModel } from '../../domain/models/signin';
+import type { GenerateTokenPort } from '../ports/generate-token.port';
 
 @Injectable()
 export class SigninUseCase {
@@ -10,6 +12,8 @@ export class SigninUseCase {
     private readonly employeePoliciesService: EmployeePoliciesService,
     @Inject('PASSWORD_VALIDATOR_PORT')
     private readonly passwordValidator: PasswordValidatorPort,
+    @Inject('GENERATE_TOKEN_PORT')
+    private readonly generateToken: GenerateTokenPort<TokenPayloadModel.Employee>,
   ) {}
 
   async execute(
@@ -27,6 +31,12 @@ export class SigninUseCase {
       employee.password,
     );
     if (!isPasswordValid) throw new InvalidCredentialsError();
+
+    await this.generateToken.generate({
+      id: employee.id,
+      email: employee.email,
+      role: employee.role,
+    });
 
     return { token: 'valid_token' };
   }
