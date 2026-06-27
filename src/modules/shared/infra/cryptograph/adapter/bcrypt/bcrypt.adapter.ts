@@ -8,8 +8,8 @@ export class BcryptAdapter implements EncrypterPort {
     return hashedValue;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async compare(value: string, hashedValue: string): Promise<boolean> {
-    return Promise.resolve(true);
+    const isMatch = await bcrypt.compare(value, hashedValue);
+    return isMatch;
   }
 }
