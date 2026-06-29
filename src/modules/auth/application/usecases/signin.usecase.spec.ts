@@ -29,7 +29,7 @@ const makeStubs = () => ({
   generateTokenStub: {
     generate: jest
       .fn()
-      .mockResolvedValue({ token: 'valid_token' }) as jest.MockedFunction<
+      .mockReturnValue({ token: 'valid_token' }) as jest.MockedFunction<
       GenerateTokenPort<any>['generate']
     >,
   } satisfies Pick<GenerateTokenPort<any>, 'generate'>,
@@ -138,6 +138,7 @@ describe('SigninUseCase', () => {
     const { sut, generateTokenStub } = await makeSut();
     const payload = {
       id: 'valid_id',
+      name: 'John Doe',
       email: 'john.doe@example.com',
       role: 'employee',
     };

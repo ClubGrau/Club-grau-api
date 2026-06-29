@@ -32,8 +32,9 @@ export class SigninUseCase {
     );
     if (!isPasswordValid) throw new InvalidCredentialsError();
 
-    const { token } = await this.generateToken.generate({
+    const { token } = this.generateToken.generate({
       id: employee.id,
+      name: employee.name,
       email: employee.email,
       role: employee.role,
     });
