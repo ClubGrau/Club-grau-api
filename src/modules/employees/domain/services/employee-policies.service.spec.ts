@@ -3,6 +3,7 @@ import { EmployeePoliciesService } from './employee-policies.service';
 import { FindActiveEmployeeByEmailPort } from '../../application/ports/find-active-employee-by-email.port';
 import { EmployeeNotFoundError } from '../errors/employee-not-found.error';
 import { InactiveEmployeeError } from '../errors/inactive-employee.error';
+import { EmployeeModel } from '../models/employee';
 
 const makeStubs = () => ({
   findActiveEmployeeByEmailStub: {
@@ -61,7 +62,10 @@ describe('EmployeePoliciesService', () => {
     const { sut, findActiveEmployeeByEmailStub } = await makeSut();
     jest.spyOn(findActiveEmployeeByEmailStub, 'isExist').mockResolvedValue({
       id: 'any_id',
+      name: 'John Doe',
       email: 'john.doe@example.com',
+      password: 'hashed_password',
+      role: 'employee' as EmployeeModel.Role,
       isActive: false,
     });
 
@@ -75,7 +79,10 @@ describe('EmployeePoliciesService', () => {
     const { sut, findActiveEmployeeByEmailStub } = await makeSut();
     const activeEmployee = {
       id: 'any_id',
+      name: 'John Doe',
       email: 'john.doe@example.com',
+      password: 'hashed_password',
+      role: 'employee' as EmployeeModel.Role,
       isActive: true,
     };
     jest

@@ -24,7 +24,7 @@ export class EmployeeMongoRepository
   async isExist(email: string): Promise<EmployeeModel.Status | null> {
     const employee = await this.employeeModel
       .findOne({ email })
-      .select({ _id: 1, email: 1, isActive: 1 })
+      .select({ _id: 1, name: 1, email: 1, password: 1, role: 1, isActive: 1 })
       .lean();
 
     if (!employee) {
@@ -33,7 +33,10 @@ export class EmployeeMongoRepository
 
     return {
       id: employee._id.toString(),
+      name: employee.name,
       email: employee.email,
+      password: employee.password,
+      role: employee.role,
       isActive: employee.isActive,
     };
   }
