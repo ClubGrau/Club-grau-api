@@ -3,6 +3,7 @@ import { BcryptAdapter } from './bcrypt.adapter';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashed_value'),
+  compare: jest.fn().mockResolvedValue(true),
 }));
 
 const makeSut = (): BcryptAdapter => new BcryptAdapter();
@@ -42,5 +43,24 @@ describe('BcryptAdapter', () => {
       .mockImplementationOnce(() => Promise.reject(new Error()));
     const promise = sut.hash('any_value');
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should have a method to compare values', () => {
+    const sut = makeSut();
+    expect(sut.compare.bind(sut)).toBeDefined();
+    expect(typeof sut.compare).toBe('function');
+  });
+
+  it('Should call bcrypt compare with correct values', async () => {
+    const sut = makeSut();
+    const compareSpy = jest.spyOn(bcrypt, 'compare');
+    await sut.compare('any_value', 'hashed_value');
+    expect(compareSpy).toHaveBeenCalledWith('any_value', 'hashed_value');
+  });
+
+  it('Should return true on success', async () => {
+    const sut = makeSut();
+    const result = await sut.compare('any_value', 'hashed_value');
+    expect(result).toBe(true);
   });
 });

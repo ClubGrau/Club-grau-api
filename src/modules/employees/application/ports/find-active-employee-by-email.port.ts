@@ -1,5 +1,5 @@
 import { EmployeeModel } from '../../domain/models/employee';
 
-export interface FindActiveEmployeeByEmail {
+export interface FindActiveEmployeeByEmailPort {
   isExist: (email: string) => Promise<EmployeeModel.Status | null>;
 }

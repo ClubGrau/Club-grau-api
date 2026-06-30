@@ -69,7 +69,10 @@ describe('EmployeeMongoRepository', () => {
           select: jest.fn().mockReturnValueOnce({
             lean: jest.fn().mockResolvedValueOnce({
               _id: employeeId,
+              name: 'John Doe',
               email: 'john.doe@example.com',
+              password: 'hashed_password',
+              role: 'admin' as EmployeeModel.Role,
               isActive: true,
             }),
           }),
@@ -79,7 +82,10 @@ describe('EmployeeMongoRepository', () => {
       expect(findOneSpy).toHaveBeenCalledWith({ email });
       expect(result).toEqual({
         id: employeeId,
+        name: 'John Doe',
         email: 'john.doe@example.com',
+        password: 'hashed_password',
+        role: 'admin',
         isActive: true,
       });
     });

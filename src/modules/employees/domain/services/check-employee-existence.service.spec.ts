@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CheckEmployeeExistenceService } from './check-employee-existence.service';
-import { FindActiveEmployeeByEmail } from '../../application/ports/find-active-employee-by-email.port';
+import { FindActiveEmployeeByEmailPort } from '../../application/ports/find-active-employee-by-email.port';
 import { ExistEmployeeError } from '../errors/exist-employee.error';
 import { InactiveEmployeeError } from '../errors/inactive-employee.error';
 
 const makeStubs = () => ({
   findActiveEmployeeByEmailStub: {
     isExist: jest.fn().mockResolvedValue(null) as jest.MockedFunction<
-      FindActiveEmployeeByEmail['isExist']
+      FindActiveEmployeeByEmailPort['isExist']
     >,
-  } satisfies FindActiveEmployeeByEmail,
+  } satisfies FindActiveEmployeeByEmailPort,
 });
 
 const makeSut = async () => {

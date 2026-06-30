@@ -39,7 +39,10 @@ export namespace EmployeeModel {
 
   export interface Status {
     id: string;
+    name: string;
     email: string;
+    password: string;
+    role: EmployeeModel.Role;
     isActive: boolean;
   }
 

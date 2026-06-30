@@ -7,4 +7,9 @@ export class BcryptAdapter implements EncrypterPort {
     const hashedValue = await bcrypt.hash(value, salt);
     return hashedValue;
   }
+
+  async compare(value: string, hashedValue: string): Promise<boolean> {
+    const isMatch = await bcrypt.compare(value, hashedValue);
+    return isMatch;
+  }
 }
