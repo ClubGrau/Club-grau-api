@@ -8,6 +8,7 @@ import { makeRepositoriesProvider } from '../infra/providers/repositories.provid
 import { makeEmployeeModelProvider } from '../infra/providers/schema.provider';
 import { GetAllEmployeesController } from '../presentation/controllers/get-all-employees.controller';
 import { GetAllEmployeesHandler } from '../application/queries/get-all-employees/handler';
+import { EmployeePoliciesService } from '../domain/services/employee-policies.service';
 
 @Module({
   imports: [CqrsModule],
@@ -15,10 +16,12 @@ import { GetAllEmployeesHandler } from '../application/queries/get-all-employees
   providers: [
     CreateEmployeeUseCase,
     CheckEmployeeExistenceService,
+    EmployeePoliciesService,
     GetAllEmployeesHandler,
     ...makeAdaptersProvider(),
     ...makeEmployeeModelProvider(),
     ...makeRepositoriesProvider(),
   ],
+  exports: [EmployeePoliciesService],
 })
 export class EmployeeModule {}
